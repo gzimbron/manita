@@ -23,7 +23,7 @@
   },
   "click": {
     "bursts": ["classic"],
-    "svg": ["burst.svg"],
+    "svg": ["burst-lines.svg", "burst-stars.svg", "burst-kaboom.svg"],
     "size": 1.6,
     "animation": { "from": 0.4, "to": 1.15, "duration": 0.4, "spin": true, "fade": true },
     "color": "#B8322A",

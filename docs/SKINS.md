@@ -21,11 +21,11 @@ Skins/cartoon-blue/
 ├── idle.svg         the hand (pointer)
 ├── sleeve.svg       the sleeve tile (optional, see Wand)
 ├── cuff.svg         the sleeve's cuff piece (optional, see Wand)
-├── burst.svg        the click effect (optional, see Click effects)
+├── burst-*.svg      click effects (optional, see Click effects)
 └── pressed.svg      (optional)
 ```
 
-A design has three parts you can draw: the **hand** (`svg.idle`), the **sleeve** (`wand.svg`) and the **click effect** (`click`). The bundled Glove draws all three as SVG (`idle.svg`, `sleeve.svg`, `burst.svg`).
+A design has three parts you can draw: the **hand** (`svg.idle`), the **sleeve** (`wand.svg`) and the **click effect** (`click`). The bundled Glove draws all three as SVG (`idle.svg`, `sleeve.svg` and three click effects).
 
 > The app never shows the pressed artwork: the hand keeps its idle frame and a click is shown by the hop, burst and jab. `pressed.svg` is optional and currently not displayed (it is kept for compatibility, and `--render-preview` still draws it).
 
@@ -117,7 +117,7 @@ The Glove's `sleeve.svg` is a plain 30 × 30 tile with `tint: true`, which looks
 
 ```json
 "click": {
-  "svg": ["burst.svg", "pow.svg"],
+  "svg": ["burst-lines.svg", "burst-stars.svg", "burst-kaboom.svg"],
   "size": 1.6,
   "animation": { "from": 0.4, "to": 1.15, "duration": 0.4, "spin": true, "fade": true }
 }
@@ -132,7 +132,7 @@ The art is drawn centered on the click point, behind the hand, in a square `size
 | `spin` | `true` | Turn the art to a random angle on every click. |
 | `fade` | `true` | Fade out while it plays. |
 
-The **Pointer Mood** and the click streak scale it like the `classic` burst. The Glove's `burst.svg` is the classic burst (12 rays around a 10-point star) drawn as SVG, with the defaults above.
+The **Pointer Mood** and the click streak scale it like the `classic` burst. The Glove cycles three click effects with the defaults above: `burst-lines.svg` (12 rays), `burst-stars.svg` (three stars of different sizes) and `burst-kaboom.svg` (a spiky "kaboom" circle).
 
 Effects play from the click number chosen in the menu's **Effects From Click** (default 3; a rapid streak is clicks less than 0.45 s apart); they take about 0.3 s (0.4 s for `classic`, which has no trailing ring) and, for the other kinds, the faint ring that follows lasts at most 0.35 s after the burst. A design with an unknown `style` or burst kind, a bad color or an out-of-range `width`/`weight` is rejected and logged. These fields apply to SVG designs only; `svg.idle` is the cursor artwork.
 
