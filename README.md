@@ -111,7 +111,7 @@ From top to bottom:
 | **Show Sleeve** | The trailing sleeve on/off. |
 | **Hide System Pointer** | Hide the real macOS pointer under the hand. |
 | **Shortcuts ▸** | Change the two global shortcuts, or *Reset to Defaults*. |
-| **Launch at Login**, **About Manita**, **Quit Manita** `⌘Q` | |
+| **Launch at Login**, **About Manita**, **Quit Manita** `⌘Q` | *About Manita* shows the version and a link to the [GitHub repository](https://github.com/gzimbron/manita). |
 
 The shortcuts shown next to the first two items are the current global shortcuts; they work anywhere, with the menu closed.
 
@@ -174,4 +174,4 @@ To see the whole pointer as it looks on screen (sleeve, hand and the classic cli
 
 ## License
 
-[MIT](LICENSE) © 2026 Gustavo Zimbrón. Inspired by the idea behind apps like Pokey; all art, sound and code here are original.
+[MIT](LICENSE) © 2026 Gustavo Zimbrón. Source: <https://github.com/gzimbron/manita>. Inspired by the idea behind apps like Pokey; all art, sound and code here are original.

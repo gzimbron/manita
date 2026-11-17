@@ -150,11 +150,33 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         menu.addItem(loginItem)
         menu.addItem(action("About Manita") {
             NSApp.activate()
-            NSApp.orderFrontStandardAboutPanel(nil)
+            NSApp.orderFrontStandardAboutPanel(options: [.credits: Self.aboutCredits()])
         })
         menu.addItem(action("Quit Manita", key: "q") { NSApp.terminate(nil) })
 
         statusItem.menu = menu
+    }
+
+    /// About panel credits: a link to the source repository.
+    private static func aboutCredits() -> NSAttributedString {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        let base: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize),
+            .foregroundColor: NSColor.labelColor,
+            .paragraphStyle: paragraph,
+        ]
+        let credits = NSMutableAttributedString()
+        let links = [
+            ("GitHub: gzimbron/manita", "https://github.com/gzimbron/manita"),
+        ]
+        for (index, (title, url)) in links.enumerated() {
+            if index > 0 { credits.append(NSAttributedString(string: "\n", attributes: base)) }
+            var attributes = base
+            attributes[.link] = URL(string: url)
+            credits.append(NSAttributedString(string: title, attributes: attributes))
+        }
+        return credits
     }
 
     // MARK: - NSMenuDelegate
