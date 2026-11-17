@@ -1,0 +1,49 @@
+{
+  "title": "Manita palette",
+  "brief": "Pick a non-orange palette for the Manita app icon and website; same tilted foam hand with sleeve",
+  "feature": "odd/tasks/launch.md",
+  "artboards": [
+    {
+      "file": "01-indigo-mint.html",
+      "title": "Indigo + mint",
+      "tradeoff": "Calm, premium and techy; least playful",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "02-cobalt-lemon.html",
+      "title": "Cobalt + lemon",
+      "tradeoff": "Loud and friendly, very visible; yellow needs dark text",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "03-forest-coral.html",
+      "title": "Forest + coral",
+      "tradeoff": "Warm and handmade; softer at small sizes",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "04-graphite-neon.html",
+      "title": "Graphite + neon pink",
+      "tradeoff": "Bold dark style that pops; dark site is less approachable",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "05-retro-cream.html",
+      "title": "Retro 30s \u00b7 cream paper",
+      "tradeoff": "Warm vintage cartoon, unmistakably its own; cream reads soft at 16 px",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "06-retro-film.html",
+      "title": "Retro 30s \u00b7 black film",
+      "tradeoff": "High contrast title-card look, pops in the Dock; darker, more dramatic site",
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}

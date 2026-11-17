@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Smack · Brush smack (reference timing, 50s ink)</title><style>*{box-sizing:border-box}body{margin:0;background:#F4F1EA;color:#111;font-family:"Futura","Avenir Next",system-ui,sans-serif}
+header{padding:20px 40px;border-bottom:4px double #111}h1{margin:0;font:italic 900 34px Georgia,serif}p{margin:6px 0 0;color:#3A3A3A}
+.stage{position:relative;margin:24px 40px;height:620px;border:3px solid #111;border-radius:8px;background:#FFFFFF;overflow:hidden;cursor:crosshair}
+.stage::after{content:"Click here (try 3 fast clicks)";position:absolute;left:20px;top:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;font-size:13px;color:#3A3A3A}
+svg.fx{position:absolute;pointer-events:none;overflow:visible}
+@media (prefers-reduced-motion:reduce){svg.fx{animation:none!important;opacity:0}}</style></head><body>
+<header><h1>Brush smack (reference timing, 50s ink)</h1><p>Follows the reference video sequence (tick ring → big rays → jagged smack → lingering ring) redrawn as tapered dip-pen ink strokes; compact (about 1.5 hands wide) and gone in about half a second, like the reference. One or two taps: tick ring and brush rays. Three fast taps: adds a quick jagged smack outline.</p></header>
+<main><div class="stage" role="application" aria-label="Click to preview the brush smack tap effect"></div></main>
+<script>const stage=document.querySelector('.stage');let last=0,streak=0;const INK='#111';
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function layer(x,y,size,html){const el=document.createElementNS('http://www.w3.org/2000/svg','svg');el.setAttribute('class','fx');el.setAttribute('viewBox','-50 -50 100 100');
+ Object.assign(el.style,{left:(x-size/2)+'px',top:(y-size/2)+'px',width:size+'px',height:size+'px'});el.innerHTML=html;stage.appendChild(el);return el;}
+function play(el,frames,ms,delay=0,ease='cubic-bezier(.2,.9,.3,1)'){const a=el.animate(frames,{duration:ms,delay,easing:ease,fill:'both'});a.onfinish=()=>el.remove();}
+// Brush stroke: a tapered wedge (thick near the start, sharp tip), slightly wobbly like a dip pen.
+function brush(a,r1,r2,w){const c=Math.cos(a),s=Math.sin(a),px=-s,py=c,mid=(r1+r2)/2,bend=rnd(-1.5,1.5);
+ return `<path d="M${(c*r1+px*w).toFixed(1)} ${(s*r1+py*w).toFixed(1)} Q${(c*mid+px*(w*.8+bend)).toFixed(1)} ${(s*mid+py*(w*.8+bend)).toFixed(1)} ${(c*r2).toFixed(1)} ${(s*r2).toFixed(1)} Q${(c*mid-px*(w*.8-bend)).toFixed(1)} ${(s*mid-py*(w*.8-bend)).toFixed(1)} ${(c*r1-px*w).toFixed(1)} ${(s*r1-py*w).toFixed(1)}Z" fill="${INK}"/>`;}
+function ticks(n,r1,r2,w){let g='';for(let i=0;i<n;i++){const a=i/n*6.283+rnd(-.12,.12);g+=brush(a,r1+rnd(-2,2),r2+rnd(-4,4),w);}return g;}
+// Jagged "smack" splat outline, hand-inked with a white fill and a halftone dot texture.
+function splat(){let p=[];const n=14;for(let i=0;i<n*2;i++){const a=i/(n*2)*6.283;const r=i%2?rnd(14,19):rnd(28,38);p.push((Math.cos(a)*r).toFixed(1)+' '+(Math.sin(a)*r).toFixed(1));}
+ return `<defs><pattern id="ht" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".8" fill="${INK}"/></pattern></defs>
+ <path d="M${p.join(' L')}Z" fill="none" stroke="${INK}" stroke-width="2.8" stroke-linejoin="round"/>`;}
+stage.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;const now=performance.now();streak=(now-last<450)?streak+1:1;last=now;
+ const wild=streak>=3;
+ // 1) quick ring of short ink ticks pops out
+ play(layer(x,y,70,ticks(10,18,26,1.4)),[{transform:'scale(.6)',opacity:1},{transform:'scale(1)',opacity:0}],140);
+ // 2) big tapered brush rays burst (uneven lengths)
+ const n=wild?16:12;let g='';for(let i=0;i<n;i++){const a=i/n*6.283+rnd(-.1,.1);g+=brush(a,rnd(16,20),rnd(30,i%2?40:47),wild?2.8:2.2);}
+ play(layer(x,y,wild?125:100,g),[{transform:'scale(.35)',opacity:1},{transform:'scale(1)',opacity:1,offset:.55},{transform:'scale(1.05)',opacity:0}],240,30);
+ // 3) wild streak: the jagged smack splat flashes in
+ if(wild) play(layer(x,y,95,splat()),[{transform:'scale(.4)',opacity:1},{transform:'scale(1)',opacity:1,offset:.4},{transform:'scale(1)',opacity:0}],180,170,'ease-out');
+ // 4) a thin dashed tick ring lingers briefly where the tap landed
+ play(layer(x,y,64,ticks(10,22,28,.9)),[{opacity:0},{opacity:.8,offset:.25},{opacity:0}],260,wild?330:220);
+});</script></body></html>

@@ -1,0 +1,49 @@
+{
+  "title": "Smack effects",
+  "brief": "Retro 1930s cartoon 'smack' click effects for Manita (app + web), cream/ink/red palette",
+  "feature": "odd/tasks/launch.md",
+  "artboards": [
+    {
+      "file": "01-pow-star.html",
+      "title": "POW star",
+      "tradeoff": "Classic comic impact: jagged star with a word; very readable, the most 'loud'",
+      "width": 1440,
+      "height": 760
+    },
+    {
+      "file": "02-impact-lines.html",
+      "title": "Rubber-hose impact lines",
+      "tradeoff": "1930s ink look: thick tapered motion lines, little stars and a dust puff; subtle and elegant",
+      "width": 1440,
+      "height": 760
+    },
+    {
+      "file": "03-stars-swirl.html",
+      "title": "Dizzy stars + bonk",
+      "tradeoff": "Cartoon 'bonk': ring of spinning little stars and a bump; most charming, less punchy",
+      "width": 1440,
+      "height": 760
+    },
+    {
+      "file": "04-ink-doodles.html",
+      "title": "Ink doodles (50s b&w)",
+      "tradeoff": "Black-and-white hand-drawn cartoon marks (ticks, sparkles, zigzags, puffs, !!, swirls); expressive and on-style; busier on wild streaks",
+      "width": 1440,
+      "height": 760
+    },
+    {
+      "file": "05-brush-smack.html",
+      "title": "Brush smack (reference timing, 50s ink)",
+      "tradeoff": "Reference sequence (tick ring \u2192 rays \u2192 jagged smack outline \u2192 faint ring) in tapered dip-pen ink; compact and gone in ~0.5 s",
+      "width": 1440,
+      "height": 760
+    },
+    {
+      "file": "06-cel-smack.html",
+      "title": "Cel smack (5 ink drawings)",
+      "tradeoff": "Five distinct hand-inked drawings swapped frame by frame (thin ticks \u2192 bold ticks \u2192 big wedges \u2192 jagged star \u2192 faint ticks), ~1.4 hands wide, gone in ~0.3\u20130.4 s; the jagged star only on fast streaks",
+      "width": 1440,
+      "height": 900
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manita · Indigo + mint</title>
+<style>
+:root{--bg:#F4F2FF;--surface:#FFFFFF;--text:#141033;--muted:#4A4470;--primary:#4B3BEF;--primary-ink:#FFFFFF;--accent:#2EE6A6;--accent-ink:#06281C;--ink:#141033}
+*{box-sizing:border-box}body{margin:0;font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text)}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 32px;background:var(--primary);color:var(--primary-ink)}
+header b{font-size:20px}header nav a{color:var(--primary-ink);margin-left:20px;text-decoration:none;font-weight:700}
+main{max-width:1200px;margin:0 auto;padding:48px 32px;display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center}
+h1{font-size:96px;line-height:.95;margin:0 0 12px;color:var(--primary);-webkit-text-stroke:3px var(--ink);text-shadow:6px 6px 0 var(--ink);letter-spacing:-2px}
+h2{font-size:28px;margin:0 0 12px}p{color:var(--muted);font-size:18px;max-width:52ch}
+.cmd{display:flex;border:3px solid var(--ink);border-radius:14px;overflow:hidden;box-shadow:5px 5px 0 var(--ink);max-width:520px;background:var(--surface)}
+.cmd code{flex:1;padding:14px 16px;font:600 15px ui-monospace,Menlo,monospace;color:var(--text)}
+button{font:800 15px inherit;font-family:inherit;border:0;cursor:pointer}
+.copy{background:var(--accent);color:var(--accent-ink);padding:0 20px;border-left:3px solid var(--ink)}
+.dl{margin-top:18px;background:var(--surface);color:var(--text);border:3px solid var(--ink);border-radius:14px;padding:12px 20px;box-shadow:4px 4px 0 var(--ink)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.icons{display:flex;flex-direction:column;align-items:center;gap:20px}
+.icons svg.big{width:300px;height:300px}.small{display:flex;gap:18px;align-items:end;color:var(--muted);font-size:13px}
+.small figure{margin:0;text-align:center}
+.card{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card article{background:var(--surface);border:3px solid var(--ink);border-radius:18px;padding:18px;box-shadow:5px 5px 0 var(--ink)}
+.card article:nth-child(2){background:var(--accent);color:var(--accent-ink)}.card article:nth-child(2) p{color:var(--accent-ink)}
+.card h3{margin:0 0 6px}.card p{font-size:15px;margin:0}
+ul.sw{grid-column:1/-1;list-style:none;padding:0;margin:0;display:flex;gap:24px;flex-wrap:wrap}
+ul.sw li{display:flex;align-items:center;gap:8px;font-size:14px}.chip{width:28px;height:28px;border-radius:8px;border:2px solid var(--ink);display:inline-block}
+ul.sw code{color:var(--muted)}
+@media (max-width:800px){main{grid-template-columns:1fr}h1{font-size:64px}.card{grid-template-columns:1fr}}
+</style></head><body>
+<header><b>Manita</b><nav aria-label="Main"><a href="#">Features</a><a href="#">Install</a><a href="#">GitHub</a></nav></header>
+<main>
+<section><h1>Manita</h1><h2>A cartoon hand for your pointer</h2>
+<p>A tiny macOS menu bar app that swaps your cursor for a cartoon foam hand with a sleeve, a click bounce and a natural click sound.</p>
+<div class="cmd"><code>brew install --cask gzimbron/tap/manita</code><button class="copy" type="button">Copy</button></div>
+<button class="dl" type="button">Download for macOS</button></section>
+<section class="icons" aria-label="App icon"><svg class="big" role="img" aria-label="Manita icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B4BFF"/><stop offset="1" stop-color="#2A1E8F"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+<clipPath id="plate"><rect x="100" y="100" width="824" height="824" rx="185"/></clipPath>
+</defs>
+<rect x="100" y="118" width="824" height="824" rx="185" fill="#1A1060" opacity="0.10"/>
+<rect x="100" y="110" width="824" height="824" rx="185" fill="#1A1060" opacity="0.14"/>
+<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+<g clip-path="url(#plate)">
+<rect x="100" y="100" width="824" height="412" fill="url(#gloss)"/>
+<g><g transform="translate(520 520) rotate(-42) scale(6.8) translate(-44 -48)">
+<path d="M25 82 L61 82 L72 200 L12 200 Z" fill="#141033" stroke="#141033" stroke-width="4" stroke-linejoin="round"/>
+<g fill="#141033" stroke="#141033" stroke-width="7" stroke-linejoin="round"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/><path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z"/></g>
+<g fill="#FFFFFF"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/></g>
+<path d="M18 66 Q40 84 64 68 Q57 79 42 79 Q27 78 18 66 Z" fill="#D8D4FF"/>
+<path d="M51 14 Q55 14 55 22 L55 52 Q51 47 50 40 Z" fill="#D8D4FF"/>
+<path d="M10 58 Q10 52 16 50 Q13 56 17 63 Q10 63 10 58 Z" fill="#D8D4FF"/>
+<path d="M30 70 Q42 77 56 70 Q48 75 42 75 Q35 75 30 70 Z" fill="#D8D4FF"/>
+<path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z" fill="#FFFFFF" stroke="#141033" stroke-width="3.2" stroke-linejoin="round"/>
+<path d="M30 79.5 Q43 76 56 79.5 L56.8 85 Q43 82 29.2 85 Z" fill="#D8D4FF"/>
+<g fill="none" stroke="#141033" stroke-width="2.6" stroke-linecap="round">
+<path d="M16 60 Q20 64 25 61"/><path d="M26 54 Q30 58 36 55"/><path d="M40 53 Q44 56 49 53.5"/>
+<path d="M73 60 Q78 60 80 56"/>
+</g>
+</g></g>
+</g>
+</svg>
+
+<div class="small"><figure><svg width="64" height="64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B4BFF"/><stop offset="1" stop-color="#2A1E8F"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+<clipPath id="plate"><rect x="100" y="100" width="824" height="824" rx="185"/></clipPath>
+</defs>
+<rect x="100" y="118" width="824" height="824" rx="185" fill="#1A1060" opacity="0.10"/>
+<rect x="100" y="110" width="824" height="824" rx="185" fill="#1A1060" opacity="0.14"/>
+<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+<g clip-path="url(#plate)">
+<rect x="100" y="100" width="824" height="412" fill="url(#gloss)"/>
+<g><g transform="translate(520 520) rotate(-42) scale(6.8) translate(-44 -48)">
+<path d="M25 82 L61 82 L72 200 L12 200 Z" fill="#141033" stroke="#141033" stroke-width="4" stroke-linejoin="round"/>
+<g fill="#141033" stroke="#141033" stroke-width="7" stroke-linejoin="round"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/><path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z"/></g>
+<g fill="#FFFFFF"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/></g>
+<path d="M18 66 Q40 84 64 68 Q57 79 42 79 Q27 78 18 66 Z" fill="#D8D4FF"/>
+<path d="M51 14 Q55 14 55 22 L55 52 Q51 47 50 40 Z" fill="#D8D4FF"/>
+<path d="M10 58 Q10 52 16 50 Q13 56 17 63 Q10 63 10 58 Z" fill="#D8D4FF"/>
+<path d="M30 70 Q42 77 56 70 Q48 75 42 75 Q35 75 30 70 Z" fill="#D8D4FF"/>
+<path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z" fill="#FFFFFF" stroke="#141033" stroke-width="3.2" stroke-linejoin="round"/>
+<path d="M30 79.5 Q43 76 56 79.5 L56.8 85 Q43 82 29.2 85 Z" fill="#D8D4FF"/>
+<g fill="none" stroke="#141033" stroke-width="2.6" stroke-linecap="round">
+<path d="M16 60 Q20 64 25 61"/><path d="M26 54 Q30 58 36 55"/><path d="M40 53 Q44 56 49 53.5"/>
+<path d="M73 60 Q78 60 80 56"/>
+</g>
+</g></g>
+</g>
+</svg>
+<figcaption>64</figcaption></figure>
+<figure><svg width="32" height="32" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B4BFF"/><stop offset="1" stop-color="#2A1E8F"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+<clipPath id="plate"><rect x="100" y="100" width="824" height="824" rx="185"/></clipPath>
+</defs>
+<rect x="100" y="118" width="824" height="824" rx="185" fill="#1A1060" opacity="0.10"/>
+<rect x="100" y="110" width="824" height="824" rx="185" fill="#1A1060" opacity="0.14"/>
+<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+<g clip-path="url(#plate)">
+<rect x="100" y="100" width="824" height="412" fill="url(#gloss)"/>
+<g><g transform="translate(520 520) rotate(-42) scale(6.8) translate(-44 -48)">
+<path d="M25 82 L61 82 L72 200 L12 200 Z" fill="#141033" stroke="#141033" stroke-width="4" stroke-linejoin="round"/>
+<g fill="#141033" stroke="#141033" stroke-width="7" stroke-linejoin="round"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/><path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z"/></g>
+<g fill="#FFFFFF"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/></g>
+<path d="M18 66 Q40 84 64 68 Q57 79 42 79 Q27 78 18 66 Z" fill="#D8D4FF"/>
+<path d="M51 14 Q55 14 55 22 L55 52 Q51 47 50 40 Z" fill="#D8D4FF"/>
+<path d="M10 58 Q10 52 16 50 Q13 56 17 63 Q10 63 10 58 Z" fill="#D8D4FF"/>
+<path d="M30 70 Q42 77 56 70 Q48 75 42 75 Q35 75 30 70 Z" fill="#D8D4FF"/>
+<path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z" fill="#FFFFFF" stroke="#141033" stroke-width="3.2" stroke-linejoin="round"/>
+<path d="M30 79.5 Q43 76 56 79.5 L56.8 85 Q43 82 29.2 85 Z" fill="#D8D4FF"/>
+<g fill="none" stroke="#141033" stroke-width="2.6" stroke-linecap="round">
+<path d="M16 60 Q20 64 25 61"/><path d="M26 54 Q30 58 36 55"/><path d="M40 53 Q44 56 49 53.5"/>
+<path d="M73 60 Q78 60 80 56"/>
+</g>
+</g></g>
+</g>
+</svg>
+<figcaption>32</figcaption></figure>
+<figure><svg width="16" height="16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B4BFF"/><stop offset="1" stop-color="#2A1E8F"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+<clipPath id="plate"><rect x="100" y="100" width="824" height="824" rx="185"/></clipPath>
+</defs>
+<rect x="100" y="118" width="824" height="824" rx="185" fill="#1A1060" opacity="0.10"/>
+<rect x="100" y="110" width="824" height="824" rx="185" fill="#1A1060" opacity="0.14"/>
+<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+<g clip-path="url(#plate)">
+<rect x="100" y="100" width="824" height="412" fill="url(#gloss)"/>
+<g><g transform="translate(520 520) rotate(-42) scale(6.8) translate(-44 -48)">
+<path d="M25 82 L61 82 L72 200 L12 200 Z" fill="#141033" stroke="#141033" stroke-width="4" stroke-linejoin="round"/>
+<g fill="#141033" stroke="#141033" stroke-width="7" stroke-linejoin="round"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/><path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z"/></g>
+<g fill="#FFFFFF"><rect x="39" y="6" width="16" height="47" rx="8"/><ellipse cx="40" cy="63" rx="24" ry="17"/><circle cx="21" cy="56" r="9"/><circle cx="31" cy="49" r="9.5"/><ellipse cx="68" cy="60" rx="14" ry="8.5" transform="rotate(-30 68 60)"/></g>
+<path d="M18 66 Q40 84 64 68 Q57 79 42 79 Q27 78 18 66 Z" fill="#D8D4FF"/>
+<path d="M51 14 Q55 14 55 22 L55 52 Q51 47 50 40 Z" fill="#D8D4FF"/>
+<path d="M10 58 Q10 52 16 50 Q13 56 17 63 Q10 63 10 58 Z" fill="#D8D4FF"/>
+<path d="M30 70 Q42 77 56 70 Q48 75 42 75 Q35 75 30 70 Z" fill="#D8D4FF"/>
+<path d="M29 78 Q43 74 57 78 L59 91 Q43 96 27 91 Z" fill="#FFFFFF" stroke="#141033" stroke-width="3.2" stroke-linejoin="round"/>
+<path d="M30 79.5 Q43 76 56 79.5 L56.8 85 Q43 82 29.2 85 Z" fill="#D8D4FF"/>
+<g fill="none" stroke="#141033" stroke-width="2.6" stroke-linecap="round">
+<path d="M16 60 Q20 64 25 61"/><path d="M26 54 Q30 58 36 55"/><path d="M40 53 Q44 56 49 53.5"/>
+<path d="M73 60 Q78 60 80 56"/>
+</g>
+</g></g>
+</g>
+</svg>
+<figcaption>16</figcaption></figure></div></section>
+<div class="card"><article><h3>Pointer mood</h3><p>Four stops from Subtle to Look at me!</p></article>
+<article><h3>Presentation mode</h3><p>⌃⌥T holds clicks back while the hand keeps poking.</p></article>
+<article><h3>Works across displays</h3><p>The sleeve follows you onto the next monitor.</p></article></div>
+<ul class="sw" aria-label="Palette"><li><span class="chip" style="background:linear-gradient(#5B4BFF,#2A1E8F)"></span><b>Plate</b><code>#5B4BFF → #2A1E8F</code></li><li><span class="chip" style="background:#141033"></span><b>Sleeve/ink</b><code>#141033</code></li><li><span class="chip" style="background:#F4F2FF"></span><b>Page</b><code>#F4F2FF</code></li><li><span class="chip" style="background:#4B3BEF"></span><b>Primary</b><code>#4B3BEF</code></li><li><span class="chip" style="background:#2EE6A6"></span><b>Accent</b><code>#2EE6A6</code></li></ul>
+</main></body></html>

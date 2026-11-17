@@ -1,0 +1,27 @@
+---
+import { getDict, type Locale } from "../i18n";
+// A keyboard shortcut as retro key caps. `keys` is the compact macOS notation, e.g. "⌃⌥P".
+// size="inline" is for running text; size="large" is for the hero and the Presentation section.
+interface Props {
+  keys: string;
+  size?: "inline" | "large";
+  locale?: Locale;
+}
+const { keys, size = "inline", locale = "en" } = Astro.props;
+
+const NAMES = getDict(locale).keyNames;
+const caps = [...keys].map((symbol) => ({ symbol, name: NAMES[symbol] }));
+const label = caps.map((c) => (c.name ? c.name[0].toUpperCase() + c.name.slice(1) : c.symbol)).join(" ");
+---
+
+<span class={`keycaps keycaps-${size}`} role="group" aria-label={label}>
+  {caps.map((c, i) => (
+    <Fragment>
+      {i > 0 && <span class="plus" aria-hidden="true">+</span>}
+      <kbd>
+        <span aria-hidden="true">{c.symbol}</span>
+        {c.name && size === "large" && <small aria-hidden="true">{c.name}</small>}
+      </kbd>
+    </Fragment>
+  ))}
+</span>

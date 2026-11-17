@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "chosen": "05-retro-cream.html",
+  "handoffs": {
+    "05-retro-cream.html": {
+      "status": "implemented",
+      "queued": false,
+      "sentAt": "2026-11-17T00:43:49.283Z",
+      "startedAt": "2026-11-17T00:44:07.286Z",
+      "implementedAt": "2026-11-17T00:49:48.943Z",
+      "feature": "odd/tasks/launch.md",
+      "previewUrl": "http://localhost:4322/manita/"
+    }
+  }
+}

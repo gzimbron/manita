@@ -1,0 +1,152 @@
+name: Release
+
+on:
+  # Normal path: called by release-please.yml after it tags a release.
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag, e.g. v1.0.1
+        required: true
+        type: string
+  # Manual fallback: Actions → Release → Run workflow, with an existing tag.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag, e.g. v1.0.1
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # If `macos-26` is unavailable, use `macos-latest`.
+    runs-on: macos-26
+    env:
+      KEYCHAIN_NAME: manita-build.keychain-db
+      TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Select newest Xcode
+        run: |
+          XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+
+      - name: Version from tag
+        run: |
+          VERSION="${TAG#v}"
+          echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$' \
+            || { echo "Tag '$TAG' is not vMAJOR.MINOR.PATCH" >&2; exit 1; }
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Import Developer ID certificate into a temporary keychain
+        env:
+          MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PASSWORD="$(uuidgen)$(uuidgen)"
+          echo "::add-mask::$KEYCHAIN_PASSWORD"
+          KEYCHAIN_PATH="$RUNNER_TEMP/$KEYCHAIN_NAME"
+          P12_FILE="$RUNNER_TEMP/developer-id.p12"
+          echo "$MACOS_CERTIFICATE_P12" | base64 --decode > "$P12_FILE"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$P12_FILE" -P "$MACOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          rm -f "$P12_FILE"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" >/dev/null
+          # Put the temporary keychain first in the search list so codesign finds the identity.
+          security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | tr -d '"')
+
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> "$GITHUB_ENV"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+      - name: Store notarytool credentials
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          xcrun notarytool store-credentials manita-notary \
+            --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD" \
+            --keychain "$KEYCHAIN_PATH" >/dev/null
+
+      - name: Build, sign, notarize
+        env:
+          MANITA_NOTARY_KEYCHAIN: ${{ env.KEYCHAIN_PATH }}
+          MANITA_NOTARY_PROFILE: manita-notary
+        run: scripts/release.sh "$VERSION"
+
+      - name: Check the zip matches the tag
+        run: |
+          set -euo pipefail
+          ZIP="dist/Manita-$VERSION.zip"
+          [ -f "$ZIP" ] || { echo "Expected $ZIP was not produced" >&2; exit 1; }
+          [ "$(ls dist/*.zip | wc -l | tr -d ' ')" = "1" ] || { echo "Unexpected extra zips in dist/" >&2; exit 1; }
+          BUNDLE_VERSION="$(unzip -p "$ZIP" Manita.app/Contents/Info.plist | plutil -extract CFBundleShortVersionString raw -o - -)"
+          [ "$BUNDLE_VERSION" = "$VERSION" ] || { echo "Tag version $VERSION != bundle version $BUNDLE_VERSION" >&2; exit 1; }
+          SHA="$(shasum -a 256 "$ZIP" | cut -d' ' -f1)"
+          echo "SHA256=$SHA" >> "$GITHUB_ENV"
+
+      - name: Extract release notes from CHANGELOG
+        run: |
+          set -euo pipefail
+          # Section "## [X.Y.Z]" up to the next "## [" heading; fall back to [Unreleased].
+          extract() {
+            awk -v h="## [$1]" 'index($0, h) == 1 { on = 1; next } /^## \[/ { on = 0 } on' CHANGELOG.md
+          }
+          NOTES="$(extract "$VERSION")"
+          [ -n "$(echo "$NOTES" | tr -d '[:space:]')" ] || NOTES="$(extract Unreleased)"
+          [ -n "$(echo "$NOTES" | tr -d '[:space:]')" ] || { echo "No CHANGELOG notes for $VERSION or Unreleased" >&2; exit 1; }
+          printf '%s\n' "$NOTES" > "$RUNNER_TEMP/notes.md"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # release-please already created the release with its notes: just attach the zip.
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" "dist/Manita-$VERSION.zip" --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" "dist/Manita-$VERSION.zip" \
+              --repo "$GITHUB_REPOSITORY" --title "Manita $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+          fi
+
+      - name: Check out Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: gzimbron/homebrew-tap
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
+          path: tap
+
+      - name: Bump the cask
+        run: |
+          set -euo pipefail
+          mkdir -p tap/Casks
+          sed -e "s/^\( *version \)\".*\"/\1\"$VERSION\"/" \
+              -e "s/^\( *sha256 \)\".*\"/\1\"$SHA256\"/" \
+              packaging/homebrew/manita.rb > tap/Casks/manita.rb
+          grep -q "version \"$VERSION\"" tap/Casks/manita.rb
+          grep -q "sha256 \"$SHA256\"" tap/Casks/manita.rb
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/manita.rb
+          git commit -m "manita $VERSION"
+          git push
+
+      - name: Delete temporary keychain
+        if: always()
+        run: |
+          if [ -n "${KEYCHAIN_PATH:-}" ]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi

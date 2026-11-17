@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Smack · Rubber-hose impact lines</title><style>*{box-sizing:border-box}body{margin:0;background:#F1E4C4;color:#1C1712;font-family:"Futura","Avenir Next",system-ui,sans-serif}
+header{padding:20px 40px;border-bottom:4px double #1C1712}h1{margin:0;font:italic 900 34px Georgia,serif}p{margin:6px 0 0;color:#4A3F33}
+.stage{position:relative;margin:24px 40px;height:620px;border:3px solid #1C1712;border-radius:8px;background:#FBF3DF;overflow:hidden;cursor:crosshair}
+.stage::after{content:"Click here (try 3 fast clicks)";position:absolute;left:20px;top:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;font-size:13px;color:#4A3F33}
+svg.fx{position:absolute;pointer-events:none;overflow:visible}
+@media (prefers-reduced-motion:reduce){svg.fx{animation:none!important;opacity:0}}</style></head><body>
+<header><h1>Rubber-hose impact lines</h1><p>1930s ink look: thick tapered motion lines, little stars and a dust puff; subtle and elegant. One or two clicks show the light version; three fast clicks show the full smack.</p></header>
+<main><div class="stage" role="application" aria-label="Click to preview the smack effect"></div></main>
+<script>const stage=document.querySelector('.stage');let last=0,streak=0;
+stage.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;
+const now=performance.now();streak=(now-last<450)?streak+1:1;last=now;fx(x,y,streak);});
+function put(svg,x,y,size){const el=document.createElementNS('http://www.w3.org/2000/svg','svg');el.setAttribute('class','fx');el.setAttribute('viewBox','-50 -50 100 100');
+el.style.left=(x-size/2)+'px';el.style.top=(y-size/2)+'px';el.style.width=size+'px';el.style.height=size+'px';el.innerHTML=svg;stage.appendChild(el);return el;}
+function anim(el,frames,ms){const a=el.animate(frames,{duration:ms,easing:'cubic-bezier(.2,.9,.3,1.2)',fill:'forwards'});a.onfinish=()=>el.remove();}function fx(x,y,s){let g='';const n=s>=3?10:7;for(let i=0;i<n;i++){const a=i/n*Math.PI*2+.3;const r1=16,r2=s>=3?44:34;
+const ax=Math.cos(a),ay=Math.sin(a),px=-ay,py=ax;const w=3.2;
+g+=`<path d="M${(ax*r1).toFixed(1)} ${(ay*r1).toFixed(1)} L${(ax*r2+px*w).toFixed(1)} ${(ay*r2+py*w).toFixed(1)} L${(ax*r2-px*w).toFixed(1)} ${(ay*r2-py*w).toFixed(1)} Z" fill="#1C1712"/>`;}
+for(let i=0;i<(s>=3?4:2);i++){const a=Math.random()*6.28,r=26+Math.random()*14;g+=`<g transform="translate(${(Math.cos(a)*r).toFixed(1)} ${(Math.sin(a)*r).toFixed(1)}) scale(.5)"><path d="M0 -9 L2.5 -2.5 L9 0 L2.5 2.5 L0 9 L-2.5 2.5 L-9 0 L-2.5 -2.5Z" fill="#B8322A" stroke="#1C1712" stroke-width="1.6"/></g>`;}
+g+=`<g fill="#FBF3DF" stroke="#1C1712" stroke-width="2"><circle cx="-8" cy="6" r="7"/><circle cx="4" cy="8" r="8"/><circle cx="12" cy="2" r="5"/></g>`;
+const el=put(g,x,y,s>=3?180:130);anim(el,[{transform:'scale(.3)',opacity:1},{transform:'scale(1)',opacity:1,offset:.4},{transform:'scale(1.12)',opacity:0}],480);}</script></body></html>

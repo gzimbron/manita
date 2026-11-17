@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Smack · POW star</title><style>*{box-sizing:border-box}body{margin:0;background:#F1E4C4;color:#1C1712;font-family:"Futura","Avenir Next",system-ui,sans-serif}
+header{padding:20px 40px;border-bottom:4px double #1C1712}h1{margin:0;font:italic 900 34px Georgia,serif}p{margin:6px 0 0;color:#4A3F33}
+.stage{position:relative;margin:24px 40px;height:620px;border:3px solid #1C1712;border-radius:8px;background:#FBF3DF;overflow:hidden;cursor:crosshair}
+.stage::after{content:"Click here (try 3 fast clicks)";position:absolute;left:20px;top:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;font-size:13px;color:#4A3F33}
+svg.fx{position:absolute;pointer-events:none;overflow:visible}
+@media (prefers-reduced-motion:reduce){svg.fx{animation:none!important;opacity:0}}</style></head><body>
+<header><h1>POW star</h1><p>Classic comic impact: jagged star with a word; very readable, the most 'loud'. One or two clicks show the light version; three fast clicks show the full smack.</p></header>
+<main><div class="stage" role="application" aria-label="Click to preview the smack effect"></div></main>
+<script>const stage=document.querySelector('.stage');let last=0,streak=0;
+stage.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;
+const now=performance.now();streak=(now-last<450)?streak+1:1;last=now;fx(x,y,streak);});
+function put(svg,x,y,size){const el=document.createElementNS('http://www.w3.org/2000/svg','svg');el.setAttribute('class','fx');el.setAttribute('viewBox','-50 -50 100 100');
+el.style.left=(x-size/2)+'px';el.style.top=(y-size/2)+'px';el.style.width=size+'px';el.style.height=size+'px';el.innerHTML=svg;stage.appendChild(el);return el;}
+function anim(el,frames,ms){const a=el.animate(frames,{duration:ms,easing:'cubic-bezier(.2,.9,.3,1.2)',fill:'forwards'});a.onfinish=()=>el.remove();}function fx(x,y,s){const words=['POW!','BAM!','SMACK!','WHAM!','BONK!'];const w=words[(s-1)%words.length];
+const pts=[];for(let i=0;i<24;i++){const a=i/24*Math.PI*2-Math.PI/2;const r=i%2?22+Math.random()*4:44+Math.random()*6;pts.push((Math.cos(a)*r).toFixed(1)+','+(Math.sin(a)*r).toFixed(1));}
+const big=s>=3;const el=put(`<polygon points="${pts.join(' ')}" fill="#B8322A" stroke="#1C1712" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="${pts.join(' ')}" transform="scale(.62)" fill="#F6D36B" stroke="#1C1712" stroke-width="2"/>
+${big?`<text y="5" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-weight="900" font-size="15" fill="#1C1712" stroke="#FBF3DF" stroke-width="3" paint-order="stroke">${w}</text>`:''}`,x,y,big?190:120);
+el.style.transform='rotate('+(Math.random()*24-12)+'deg)';anim(el,[{transform:el.style.transform+' scale(.2)',opacity:1},{transform:el.style.transform+' scale(1.08)',opacity:1,offset:.35},{transform:el.style.transform+' scale(1)',opacity:1,offset:.7},{transform:el.style.transform+' scale(1.05)',opacity:0}],520);}</script></body></html>

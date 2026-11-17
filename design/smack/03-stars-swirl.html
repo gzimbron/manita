@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Smack · Dizzy stars + bonk</title><style>*{box-sizing:border-box}body{margin:0;background:#F1E4C4;color:#1C1712;font-family:"Futura","Avenir Next",system-ui,sans-serif}
+header{padding:20px 40px;border-bottom:4px double #1C1712}h1{margin:0;font:italic 900 34px Georgia,serif}p{margin:6px 0 0;color:#4A3F33}
+.stage{position:relative;margin:24px 40px;height:620px;border:3px solid #1C1712;border-radius:8px;background:#FBF3DF;overflow:hidden;cursor:crosshair}
+.stage::after{content:"Click here (try 3 fast clicks)";position:absolute;left:20px;top:14px;font-weight:800;letter-spacing:3px;text-transform:uppercase;font-size:13px;color:#4A3F33}
+svg.fx{position:absolute;pointer-events:none;overflow:visible}
+@media (prefers-reduced-motion:reduce){svg.fx{animation:none!important;opacity:0}}</style></head><body>
+<header><h1>Dizzy stars + bonk</h1><p>Cartoon 'bonk': ring of spinning little stars and a bump; most charming, less punchy. One or two clicks show the light version; three fast clicks show the full smack.</p></header>
+<main><div class="stage" role="application" aria-label="Click to preview the smack effect"></div></main>
+<script>const stage=document.querySelector('.stage');let last=0,streak=0;
+stage.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();const x=e.clientX-r.left,y=e.clientY-r.top;
+const now=performance.now();streak=(now-last<450)?streak+1:1;last=now;fx(x,y,streak);});
+function put(svg,x,y,size){const el=document.createElementNS('http://www.w3.org/2000/svg','svg');el.setAttribute('class','fx');el.setAttribute('viewBox','-50 -50 100 100');
+el.style.left=(x-size/2)+'px';el.style.top=(y-size/2)+'px';el.style.width=size+'px';el.style.height=size+'px';el.innerHTML=svg;stage.appendChild(el);return el;}
+function anim(el,frames,ms){const a=el.animate(frames,{duration:ms,easing:'cubic-bezier(.2,.9,.3,1.2)',fill:'forwards'});a.onfinish=()=>el.remove();}function fx(x,y,s){let g='';const n=s>=3?7:5;for(let i=0;i<n;i++){const a=i/n*Math.PI*2;g+=`<g transform="rotate(${(a*57.3).toFixed(0)}) translate(30 0) scale(.62)"><path d="M0 -10 L2.9 -3.5 L10 -3 L4.6 1.7 L6.2 9 L0 5.2 L-6.2 9 L-4.6 1.7 L-10 -3 L-2.9 -3.5Z" fill="${i%2?'#F6D36B':'#B8322A'}" stroke="#1C1712" stroke-width="1.8" stroke-linejoin="round"/></g>`;}
+g=`<ellipse rx="34" ry="12" fill="none" stroke="#1C1712" stroke-width="1.5" stroke-dasharray="4 5" opacity=".6"/><g class="spin">${g}</g>`;
+if(s>=3)g+=`<path d="M-14 -4 Q0 -22 14 -4" fill="none" stroke="#1C1712" stroke-width="3" stroke-linecap="round"/><path d="M-8 -10 L-12 -18 M0 -13 L0 -22 M8 -10 L12 -18" stroke="#1C1712" stroke-width="2.5" stroke-linecap="round"/>`;
+const el=put(g,x,y,s>=3?170:130);el.querySelector('.spin').animate([{transform:'rotate(0)'},{transform:'rotate(140deg)'}],{duration:700,fill:'forwards'});
+anim(el,[{transform:'scale(.4)',opacity:1},{transform:'scale(1)',opacity:1,offset:.3},{transform:'scale(1)',opacity:1,offset:.75},{transform:'scale(.9)',opacity:0}],700);}</script></body></html>

@@ -1,0 +1,13 @@
+.DS_Store
+.build/
+.swiftpm/
+build/
+*.xcodeproj/xcuserdata/
+DerivedData/
+.atl/
+dist/
+web/node_modules
+web/dist
+web/.astro
+odd/tasks/
+.playwright-cli/

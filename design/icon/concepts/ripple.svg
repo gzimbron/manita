@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#3B2A9E"/><stop offset="1" stop-color="#8B3FD9"/></linearGradient>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/><stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+<clipPath id="plate"><rect x="100" y="100" width="824" height="824" rx="185"/></clipPath>
+</defs>
+<rect x="100" y="118" width="824" height="824" rx="185" fill="#1A0F4A" opacity="0.10"/>
+<rect x="100" y="110" width="824" height="824" rx="185" fill="#1A0F4A" opacity="0.14"/>
+<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+<g clip-path="url(#plate)">
+<rect x="100" y="100" width="824" height="412" fill="url(#gloss)"/>
+<circle cx="512" cy="360" r="100" fill="none" stroke="#5EF2D0" stroke-opacity="1" stroke-width="26"/>
+<circle cx="512" cy="360" r="190" fill="none" stroke="#5EF2D0" stroke-opacity="0.75" stroke-width="24"/>
+<circle cx="512" cy="360" r="280" fill="none" stroke="#5EF2D0" stroke-opacity="0.45" stroke-width="22"/>
+<circle cx="512" cy="360" r="30" fill="#5EF2D0"/>
+<g transform="translate(512 360) rotate(-8) scale(1.9)">
+<g stroke-linejoin="round" stroke-linecap="round">
+<rect x="-62" y="235" width="114" height="140" rx="22" fill="#5EF2D0" stroke="#2A1B6B" stroke-width="7"/><g fill="#2A1B6B" stroke="#2A1B6B" stroke-width="14"><rect x="-22" y="0" width="44" height="190" rx="22"/><rect x="-66" y="126" width="128" height="126" rx="46"/><rect x="14" y="130" width="84" height="36" rx="18"/><rect x="14" y="163" width="84" height="36" rx="18"/><rect x="14" y="196" width="78" height="36" rx="18"/><ellipse cx="-56" cy="186" rx="17" ry="32" transform="rotate(28 -56 186)"/></g>
+<g fill="#FFFFFF"><rect x="-22" y="0" width="44" height="190" rx="22"/><rect x="-66" y="126" width="128" height="126" rx="46"/></g>
+<g fill="#FFFFFF" stroke="#2A1B6B" stroke-width="7"><rect x="14" y="130" width="84" height="36" rx="18"/><rect x="14" y="163" width="84" height="36" rx="18"/><rect x="14" y="196" width="78" height="36" rx="18"/><ellipse cx="-56" cy="186" rx="17" ry="32" transform="rotate(28 -56 186)"/></g>
+</g>
+</g>
+</g>
+</svg>

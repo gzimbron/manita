@@ -1,0 +1,28 @@
+{
+  "id": "cartoon",
+  "name": "Glove",
+  "author": "Manita",
+  "svg": {
+    "idle": "idle.svg",
+    "pressed": "pressed.svg"
+  },
+  "hotspot": {
+    "x": 35,
+    "y": 6
+  },
+  "armAnchor": {
+    "x": 60.3,
+    "y": 87.2
+  },
+  "wand": {
+    "style": "sleeve",
+    "color": "#111111",
+    "width": 30,
+    "fade": true
+  },
+  "click": {
+    "bursts": ["classic"],
+    "color": "#B8322A",
+    "weight": 1
+  }
+}

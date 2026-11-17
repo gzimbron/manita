@@ -1,0 +1,33 @@
+---
+import idle from "../assets/idle.svg?raw";
+
+// One SVG in the same 100-unit space as the app's idle.svg, so the sleeve cannot drift from the
+// hand with CSS. Numbers mirror the app (skin.json + PointerSurface, mood 1):
+//   anchor (60.3, 87.2), tucked 25% of armWidth (30) back, width 30 × 0.9 = 27,
+//   20° from vertical toward the bottom-right, 6 hands long, opaque for 45% then fading, opacity 0.85.
+const ANGLE = (20 * Math.PI) / 180;
+const dx = Math.sin(ANGLE);
+const dy = Math.cos(ANGLE);
+const tuck = 30 * 0.25;
+const x1 = +(60.3 - dx * tuck).toFixed(2);
+const y1 = +(87.2 - dy * tuck).toFixed(2);
+const x2 = +(x1 + dx * 600).toFixed(2);
+const y2 = +(y1 + dy * 600).toFixed(2);
+const art = idle.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+---
+
+<div class="hand" aria-hidden="true">
+  <div class="hand-body">
+    <svg class="hand-art" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hand-sleeve-fade" gradientUnits="userSpaceOnUse" x1={x1} y1={y1} x2={x2} y2={y2}>
+          <stop offset="0" stop-color="#1C1712" stop-opacity="0.85"></stop>
+          <stop offset="0.45" stop-color="#1C1712" stop-opacity="0.85"></stop>
+          <stop offset="1" stop-color="#1C1712" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="url(#hand-sleeve-fade)" stroke-width="27" stroke-linecap="butt"></line>
+      <g set:html={art} />
+    </svg>
+  </div>
+</div>

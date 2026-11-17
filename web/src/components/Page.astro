@@ -1,0 +1,204 @@
+---
+import Hand from "./Hand.astro";
+import Keys from "./Keys.astro";
+import { getDict, locales, localePath, dictionaries, type Locale } from "../i18n";
+import "../styles/global.css";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const site = Astro.site!.origin;
+const urlOf = (l: Locale) => `${site}${base}/${localePath(l)}`;
+const hrefOf = (l: Locale) => `${base}/${localePath(l)}`;
+const pageUrl = urlOf(locale);
+const ogImage = `${site}${base}/og.png`;
+const install = "brew install --cask gzimbron/tap/manita";
+const releases = "https://github.com/gzimbron/manita/releases/latest";
+const repo = "https://github.com/gzimbron/manita";
+
+// "{P}" and "{T}" in a text become inline key caps.
+const SHORTCUTS: Record<string, string> = { "{P}": "⌃⌥P", "{T}": "⌃⌥T" };
+const parts = (text: string) => text.split(/(\{[PT]\})/);
+const rich = (text: string) => parts(text).map((p) => (SHORTCUTS[p] ? { keys: SHORTCUTS[p] } : { text: p }));
+const copyAttrs = {
+  "data-label": t.copy,
+  "data-copied": t.copied,
+  "data-fallback": t.copyFallback,
+  "data-status-ok": t.copiedStatus,
+  "data-status-fail": t.copyFailedStatus,
+};
+---
+
+<!doctype html>
+<html lang={t.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.title}</title>
+    <meta name="description" content={t.description} />
+    <meta name="theme-color" content="#F1E4C4" />
+    <link rel="canonical" href={pageUrl} />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={urlOf(l)} />)}
+    <link rel="alternate" hreflang="x-default" href={urlOf("en")} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Manita" />
+    <meta property="og:locale" content={t.ogLocale} />
+    {locales.filter((l) => l !== locale).map((l) => <meta property="og:locale:alternate" content={dictionaries[l].ogLocale} />)}
+    <meta property="og:title" content={t.title} />
+    <meta property="og:description" content={t.description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={t.title} />
+    <meta name="twitter:description" content={t.description} />
+    <meta name="twitter:image" content={ogImage} />
+  </head>
+  <body>
+    <svg class="grain" aria-hidden="true" focusable="false" width="100%" height="100%">
+      <filter id="paper-grain">
+        <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch" />
+        <feColorMatrix values="0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .05  0 0 0 .35 0" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#paper-grain)" />
+    </svg>
+    <a class="skip" href="#main">{t.skip}</a>
+    <header class="top">
+      <a class="brand" href={hrefOf(locale)}>Manita</a>
+      <nav aria-label={t.navLabel}>
+        <a href="#features">{t.nav.features}</a>
+        <a href="#presentation">{t.nav.presentation}</a>
+        <a href="#install">{t.nav.install}</a>
+        <a href={repo}>{t.nav.github}</a>
+        <span class="lang" role="group" aria-label={t.langSwitchLabel}>
+          {locales.map((l, i) => (
+            <Fragment>
+              {i > 0 && <span class="sep" aria-hidden="true">|</span>}
+              {l === locale ? (
+                <span class="current" aria-current="true">{l.toUpperCase()}</span>
+              ) : (
+                <a href={hrefOf(l)} hreflang={l} lang={l} title={dictionaries[l].langName}>{l.toUpperCase()}</a>
+              )}
+            </Fragment>
+          ))}
+        </span>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="kicker">{t.kicker}</p>
+          <h1 id="hero-title">Manita</h1>
+          <h2 class="tagline">{t.tagline}</h2>
+          <p class="pitch">{t.pitch}</p>
+          <div class="cta">
+            <div class="copybox">
+              <code id="install-cmd">{install}</code>
+              <button type="button" class="copy" data-copy={install} aria-describedby="install-cmd" {...copyAttrs}>
+                <span data-copy-label>{t.copy}</span><span class="sr">{t.copySr}</span>
+              </button>
+              <span class="sr" role="status" data-copy-status></span>
+            </div>
+            <a class="btn btn-alt" href={releases}>{t.download}</a>
+          </div>
+          <div class="hero-keys">
+            <Keys keys="⌃⌥P" size="large" locale={locale} />
+            <p>{t.toggleHand}</p>
+          </div>
+          <p class="note">{t.note}</p>
+        </div>
+        <div class="hero-art">
+          <div class="frame">
+            <div class="icon-crop"><img src={`${base}/icon-512.png`} width="372" height="372" alt={t.iconAlt} /></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo" id="demo" aria-labelledby="demo-title">
+        <h2 id="demo-title">{t.demo.title}</h2>
+        <p class="lede">{t.demo.lede}</p>
+        <div class="stage" data-stage data-jab={t.demo.jab} aria-hidden="true">
+          <Hand />
+          <p class="stage-hint">{t.demo.hint}</p>
+          <p class="streak" data-streak>×0</p>
+        </div>
+        <p class="sr">{t.demo.sr}</p>
+      </section>
+
+      <section class="features" id="features" aria-labelledby="features-title">
+        <h2 id="features-title">{t.featuresTitle}</h2>
+        <ul class="grid feat">
+          {t.features.map((f) => (
+            <li class="card">
+              <span class="icon" aria-hidden="true">{f.icon}</span>
+              <h3>{f.title}</h3>
+              <p>{rich(f.text).map((p) => ("keys" in p ? <Keys keys={p.keys} locale={locale} /> : p.text))}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="present" id="presentation" aria-labelledby="present-title">
+        <div class="present-copy">
+          <h2 id="present-title">{t.present.title}</h2>
+          <p class="lede">{t.present.lede}</p>
+          <ul class="checks">
+            {t.present.checks.map((c) => (
+              <li>{rich(c).map((p) => ("keys" in p ? <Keys keys={p.keys} locale={locale} /> : p.text))}</li>
+            ))}
+          </ul>
+        </div>
+        <div class="keymap">
+          <div class="keyrow">
+            <Keys keys="⌃⌥T" size="large" locale={locale} />
+            <p>{t.present.toggle}</p>
+          </div>
+          <div class="keyrow">
+            <Keys keys="⌃⌥P" size="large" locale={locale} />
+            <p>{t.toggleHand}</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="install" id="install" aria-labelledby="install-title">
+        <h2 id="install-title">{t.install.title}</h2>
+        <div class="grid two">
+          <div class="card">
+            <h3>{t.install.homebrew}</h3>
+            <div class="copybox">
+              <code id="install-cmd-2">{install}</code>
+              <button type="button" class="copy" data-copy={install} aria-describedby="install-cmd-2" {...copyAttrs}>
+                <span data-copy-label>{t.copy}</span><span class="sr">{t.copySr}</span>
+              </button>
+              <span class="sr" role="status" data-copy-status></span>
+            </div>
+          </div>
+          <div class="card">
+            <h3>{t.install.directTitle}</h3>
+            <p set:html={t.install.directHtml} />
+            <a class="btn btn-alt" href={releases}>{t.download}</a>
+          </div>
+        </div>
+        <p class="a11y-note" set:html={t.install.firstRunHtml} />
+      </section>
+    </main>
+
+    <footer>
+      <p><a href={repo}>{t.footer.github}</a> · <a href={`${repo}/blob/main/LICENSE`}>{t.footer.license}</a></p>
+      <p>{t.footer.madeBy}</p>
+    </footer>
+
+    <script>
+      import "../scripts/demo.ts";
+    </script>
+  </body>
+</html>

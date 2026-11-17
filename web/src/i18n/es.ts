@@ -1,0 +1,69 @@
+// Spanish copy (neutral Latin American, tú form). Same keys as `en.ts`, enforced by the `Dict` type.
+// Product, menu item names and shortcuts stay as they appear in the (English) app.
+import type { Dict } from "./en";
+
+export const es: Dict = {
+  htmlLang: "es",
+  ogLocale: "es_MX",
+  langName: "Español",
+  title: "Manita — Una mano de caricatura para tu puntero",
+  description:
+    "Manita es una app gratuita y de código abierto para la barra de menús de macOS que convierte tu puntero en una mano con guante de dibujos animados clásicos, con manga larga, estallidos al hacer clic y un modo presentación.",
+  ogImageAlt: "Manita: un guante de caricatura como puntero del mouse",
+  skip: "Saltar al contenido",
+  navLabel: "Principal",
+  langSwitchLabel: "Idioma",
+  nav: { features: "Funciones", presentation: "Presentación", install: "Instalar", github: "GitHub" },
+  kicker: "★ Ahora en tu Mac ★",
+  tagline: "Una mano de caricatura para tu puntero",
+  pitch:
+    "Una mini app de la barra de menús de macOS que cambia tu cursor por una mano enguantada de dibujos animados de antaño, con manga larga, un golpecito al hacer clic y un sonido de clic natural.",
+  copy: "Copiar",
+  copySr: " comando de instalación",
+  copied: "¡Copiado!",
+  copyFallback: "Pulsa ⌘C",
+  copiedStatus: "Comando de instalación copiado al portapapeles",
+  copyFailedStatus: "No se pudo copiar; selecciona el comando y pulsa Comando C",
+  download: "Descargar para macOS",
+  toggleHand: "Mostrar u ocultar la mano",
+  note: "macOS 26 o posterior · Gratis y de código abierto",
+  iconAlt: "Ícono de Manita: un guante de caricatura señalando, sobre papel color crema",
+  keyNames: { "⌃": "control", "⌥": "opción", "⌘": "comando", "⇧": "mayús" },
+  demo: {
+    title: "Pruébalo aquí mismo",
+    lede: "Mueve el puntero sobre el escenario. Haz clic para que la mano brinque. Haz clic tres veces rápido para que dé el golpe y se sacuda.",
+    hint: "Muévete aquí · clic · clic ×3 rápido",
+    jab: "¡golpe!",
+    sr: "Esta demo es decorativa y se maneja con el mouse; no tiene interacción con el teclado.",
+  },
+  featuresTitle: "Mano chiquita, gran personalidad",
+  features: [
+    { icon: "🎚️", title: "Ánimo del puntero", text: "Un control de cuatro niveles, de Subtle a Look at me! en el menú Pointer Mood. Manga más ancha, golpes más fuertes, estallidos más grandes." },
+    { icon: "💥", title: "Efectos al hacer clic", text: "Cada clic hace que la mano brinque y regrese como resorte. Desde el tercer clic rápido da el golpe, se sacude y estalla. Se ajusta en el menú Effects From Click." },
+    { icon: "🎤", title: "Modo presentación", text: "{T} retiene los clics de todas las apps, así que puedes señalar detalles sin avanzar tus diapositivas." },
+    { icon: "⌨️", title: "Atajos globales", text: "{P} muestra u oculta el puntero y {T} activa el modo presentación. Ambos se pueden personalizar en Shortcuts." },
+    { icon: "🌗", title: "Color en modo oscuro", text: "La manga es negra en escritorios claros y gris translúcido en modo oscuro, y cambia junto con macOS. Elige el estilo en el menú Color." },
+    { icon: "🖥️", title: "Funciona en todas tus pantallas", text: "Sigue al puntero por cualquier app, Space y ventana en pantalla completa." },
+    { icon: "🎨", title: "Diseños personalizados", text: "Pon una carpeta con un skin.json y un par de SVG en tu carpeta Skins y vuelve a cargar." },
+  ],
+  present: {
+    title: "Modo presentación",
+    lede: "Señalar cosas durante una demo no debería presionarlas. Actívalo y Manita sigue animando cada clic, pero no lo deja pasar a ninguna app.",
+    checks: [
+      "No se presiona nada y tus diapositivas no avanzan.",
+      "Al arrastrar solo se mueve el puntero; el scroll y el teclado siguen funcionando.",
+      "{T} es la única salida, y un aviso te lo recuerda.",
+      "Nunca se restaura al abrir: Manita siempre arranca con los clics funcionando.",
+    ],
+    toggle: "Modo presentación sí/no",
+  },
+  install: {
+    title: "Consigue Manita",
+    homebrew: "Homebrew",
+    directTitle: "Descarga directa",
+    directHtml: "Baja el <code>.zip</code> más reciente desde GitHub Releases, descomprímelo y arrastra Manita a Aplicaciones.",
+    firstRunHtml:
+      "<strong>Primer uso:</strong> Manita vive en la barra de menús (sin ícono en el Dock). El permiso de Accesibilidad solo hace falta para el modo presentación; concédelo en Ajustes del Sistema → Privacidad y seguridad → Accesibilidad cuando macOS te lo pida.",
+  },
+  footer: { github: "GitHub", license: "Licencia MIT", madeBy: "Hecho por Gustavo Zimbrón" },
+};
