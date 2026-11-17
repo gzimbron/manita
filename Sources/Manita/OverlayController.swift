@@ -312,8 +312,9 @@ final class OverlayController {
         art.image.frame = art.layer.bounds
         art.image.contents = image
         art.image.contentsGravity = .resizeAspect
+        let limit = CGFloat(click.animation.rotation) * .pi / 180
         art.image.setAffineTransform(
-            click.animation.spin ? CGAffineTransform(rotationAngle: rng.next(in: 0...(2 * .pi))) : .identity)
+            click.animation.spin && limit > 0 ? CGAffineTransform(rotationAngle: rng.next(in: -limit...limit)) : .identity)
         return true
     }
 
@@ -374,9 +375,14 @@ final class OverlayController {
         let animation = click.animation
         // Each click takes the next slot, so up to `artSlots` effects play at once, each to its end.
         let slot = clickCount % PointerSurface.artSlots
+        // Scatter: a random point within `scatter` hand sizes of the click (uniform over the circle).
+        var rng = SplitMix(seed: UInt64(truncatingIfNeeded: clickCount &* 40503 &+ 7))
+        let reach = hand * CGFloat(animation.scatter) * sqrt(rng.next(in: 0...1))
+        let angle = rng.next(in: 0...(2 * .pi))
+        let landing = NSPoint(x: point.x + cos(angle) * reach, y: point.y + sin(angle) * reach)
         withoutAnimation {
             for surface in surfaces {
-                surface.placeEffects(at: point, slot: slot)
+                surface.placeEffects(at: landing, slot: slot)
                 shapeArt(on: surface, slot: slot, effect: clickCount, hand: hand, strength: strength)
             }
         }

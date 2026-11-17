@@ -25,7 +25,7 @@
     "bursts": ["classic"],
     "svg": ["burst-lines.svg", "burst-stars.svg", "burst-kaboom.svg"],
     "size": 1.6,
-    "animation": { "from": 0.4, "to": 1.15, "duration": 0.4, "spin": true, "fade": true },
+    "animation": { "from": 0.6, "to": 2.15, "duration": 0.4, "spin": true, "fade": true, "scatter": 0.4, "rotation": 35 },
     "color": "#B8322A",
     "weight": 1
   }

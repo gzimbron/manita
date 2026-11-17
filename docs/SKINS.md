@@ -119,7 +119,7 @@ The Glove's `sleeve.svg` is a plain 30 × 30 tile with `tint: true`, which looks
 "click": {
   "svg": ["burst-lines.svg", "burst-stars.svg", "burst-kaboom.svg"],
   "size": 1.6,
-  "animation": { "from": 0.4, "to": 1.15, "duration": 0.4, "spin": true, "fade": true }
+  "animation": { "from": 0.4, "to": 1.15, "duration": 0.4, "spin": true, "rotation": 35, "fade": true, "scatter": 0.4 }
 }
 ```
 
@@ -130,9 +130,11 @@ Rapid clicks overlap: up to 5 effects play at once, each to its end (a sixth cli
 | `from`, `to` | `0.4`, `1.15` | Scale at the start and at the end (1 = `size`), from 0 to 4. |
 | `duration` | `0.4` | Seconds, from 0.05 to 2. |
 | `spin` | `true` | Turn the art to a random angle on every click. |
+| `rotation` | `180` | With `spin`: the largest turn, in degrees either way, from 0 to 180 (180: any angle; 30: between -30° and 30°). |
+| `scatter` | `0` | How far from the click point the art may land, in hand sizes, from 0 to 3: each click picks a random point in that circle. 0 keeps it centered. |
 | `fade` | `true` | Fade out while it plays. |
 
-The **Pointer Mood** and the click streak scale it like the `classic` burst. The Glove cycles three click effects with the defaults above: `burst-lines.svg` (12 rays), `burst-stars.svg` (three stars of different sizes) and `burst-kaboom.svg` (a spiky "kaboom" circle).
+The **Pointer Mood** and the click streak scale it like the `classic` burst. The Glove cycles three click effects, scattered up to 0.4 hand sizes and turned at most 35°: `burst-lines.svg` (12 rays), `burst-stars.svg` (three stars of different sizes) and `burst-kaboom.svg` (a spiky "kaboom" circle).
 
 Effects play from the click number chosen in the menu's **Effects From Click** (default 3; a rapid streak is clicks less than 0.45 s apart); they take about 0.3 s (0.4 s for `classic`, which has no trailing ring) and, for the other kinds, the faint ring that follows lasts at most 0.35 s after the burst. A design with an unknown `style` or burst kind, a bad color or an out-of-range `width`/`weight` is rejected and logged. These fields apply to SVG designs only; `svg.idle` is the cursor artwork.
 

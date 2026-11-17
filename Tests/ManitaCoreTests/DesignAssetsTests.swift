@@ -90,6 +90,27 @@ struct DesignAssetsTests {
         #expect(skin.click.animation == BurstAnimation(from: 0.4, to: 1.15, duration: 0.4, spin: true, fade: true))
     }
 
+    @Test func clickArtScatterAndRotationLimit() throws {
+        let skin = try load(manifest(click: #"{"svg":["pow.svg"],"animation":{"scatter":0.5,"rotation":30}}"#),
+                            files: ["pow.svg": Self.tile])
+        #expect(skin.click.animation.scatter == 0.5 && skin.click.animation.rotation == 30)
+        // Missing: centered, any angle (the behavior before these fields existed).
+        let plain = try load(manifest(click: #"{"svg":["pow.svg"]}"#), files: ["pow.svg": Self.tile])
+        #expect(plain.click.animation.scatter == 0 && plain.click.animation.rotation == 180)
+    }
+
+    @Test func clickScatterOutOfRangeIsRejected() {
+        #expect(throws: SkinError.invalidClick("animation.scatter must be from 0.0 to 3.0")) {
+            try load(manifest(click: #"{"svg":["pow.svg"],"animation":{"scatter":4}}"#), files: ["pow.svg": Self.tile])
+        }
+    }
+
+    @Test func clickRotationOutOfRangeIsRejected() {
+        #expect(throws: SkinError.invalidClick("animation.rotation must be from 0.0 to 180.0")) {
+            try load(manifest(click: #"{"svg":["pow.svg"],"animation":{"rotation":-5}}"#), files: ["pow.svg": Self.tile])
+        }
+    }
+
     @Test func clickWithMissingFileIsRejected() {
         #expect(throws: SkinError.missingSVGFile("pow.svg")) {
             try load(manifest(click: #"{"svg":["pow.svg"]}"#), files: [:])

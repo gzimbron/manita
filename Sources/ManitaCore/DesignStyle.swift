@@ -91,6 +91,8 @@ public enum BurstKind: String, Codable, CaseIterable, Sendable {
 public struct BurstAnimation: Codable, Equatable, Sendable {
     public static let scaleRange = 0.0...4.0
     public static let durationRange = 0.05...2.0
+    public static let scatterRange = 0.0...3.0
+    public static let rotationRange = 0.0...180.0
 
     /// Scale at the start and at the end, 1 being `click.size`.
     public var from: Double
@@ -101,16 +103,23 @@ public struct BurstAnimation: Codable, Equatable, Sendable {
     public var spin: Bool
     /// Fade out while it plays.
     public var fade: Bool
+    /// How far from the click point the art may land, in hand sizes (a random point in that circle). 0: centered.
+    public var scatter: Double
+    /// With `spin`: the largest turn, in degrees either way (180: any angle).
+    public var rotation: Double
 
-    public init(from: Double = 0.4, to: Double = 1.15, duration: Double = 0.4, spin: Bool = true, fade: Bool = true) {
+    public init(from: Double = 0.4, to: Double = 1.15, duration: Double = 0.4, spin: Bool = true, fade: Bool = true,
+                scatter: Double = 0, rotation: Double = 180) {
         self.from = from
         self.to = to
         self.duration = duration
         self.spin = spin
         self.fade = fade
+        self.scatter = scatter
+        self.rotation = rotation
     }
 
-    private enum CodingKeys: String, CodingKey { case from, to, duration, spin, fade }
+    private enum CodingKeys: String, CodingKey { case from, to, duration, spin, fade, scatter, rotation }
 
     public init(from decoder: Decoder) throws {
         let defaults = BurstAnimation()
@@ -120,6 +129,8 @@ public struct BurstAnimation: Codable, Equatable, Sendable {
         duration = try c.decodeIfPresent(Double.self, forKey: .duration) ?? defaults.duration
         spin = try c.decodeIfPresent(Bool.self, forKey: .spin) ?? defaults.spin
         fade = try c.decodeIfPresent(Bool.self, forKey: .fade) ?? defaults.fade
+        scatter = try c.decodeIfPresent(Double.self, forKey: .scatter) ?? defaults.scatter
+        rotation = try c.decodeIfPresent(Double.self, forKey: .rotation) ?? defaults.rotation
     }
 }
 
@@ -221,6 +232,13 @@ extension Skin {
         }
         guard [animation.from, animation.to].allSatisfy({ $0.isFinite && scales.contains($0) }) else {
             throw SkinError.invalidClick("animation.from and animation.to must be from \(scales.lowerBound) to \(scales.upperBound)")
+        }
+        let scatters = BurstAnimation.scatterRange, rotations = BurstAnimation.rotationRange
+        guard animation.scatter.isFinite, scatters.contains(animation.scatter) else {
+            throw SkinError.invalidClick("animation.scatter must be from \(scatters.lowerBound) to \(scatters.upperBound)")
+        }
+        guard animation.rotation.isFinite, rotations.contains(animation.rotation) else {
+            throw SkinError.invalidClick("animation.rotation must be from \(rotations.lowerBound) to \(rotations.upperBound)")
         }
     }
 }
