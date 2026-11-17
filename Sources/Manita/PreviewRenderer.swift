@@ -35,7 +35,7 @@ enum PreviewRenderer {
             let ids = registry.skins.map(\.id).joined(separator: ", ")
             return fail("Unknown design '\(skinArg)'. Built-in designs: \(ids), or pass a design folder or .json file")
         }
-        guard let art = HandArtwork.render(skin, scale: scale) else { return fail("Cannot render '\(skinArg)'") }
+        guard let art = HandArtwork.render(skin.resolved(for: .light), scale: scale) else { return fail("Cannot render '\(skinArg)'") }
 
         let pad = art.size.width * 0.3
         let size = CGSize(width: art.size.width * 2 + pad * 3, height: art.size.height + pad * 2)
@@ -93,8 +93,8 @@ enum PreviewRenderer {
         let isDark = appearance == "dark"
 
         let overlay = OverlayController()
-        overlay.configure(skin: skin, scale: scale, showArm: true, mood: Mood.style(mood),
-                          color: PointerColor.automatic.resolved(systemIsDark: isDark)?.cgColor)
+        overlay.configure(skin: skin.resolved(for: isDark ? .dark : .light), scale: scale, showArm: true,
+                          mood: Mood.style(mood))
         let layout = overlay.previewLayout
         // Extra room above and left of the hotspot for the burst; long sleeves are cut at the bottom.
         let pad = CGFloat(scale) * HandArtwork.svgPointsPerScale * 1.2

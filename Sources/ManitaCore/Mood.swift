@@ -65,26 +65,3 @@ public enum Mood {
                   burstRadius: 1.35, burstRays: 16, burstWeight: 1.6, comicBursts: true, lingerDuration: 0.35),
     ]
 }
-
-/// Color of the sleeve and click effects.
-public enum PointerColor: String, Codable, CaseIterable, Sendable {
-    /// Black on a light desktop, white in Dark Mode.
-    case automatic
-    case black
-    case white
-    /// Whatever the design declares (`arm` in `skin.json`, or the pixel outline).
-    case design
-
-    /// The color to draw, or `nil` to use the design's own.
-    public func resolved(systemIsDark: Bool) -> RGBA? {
-        switch self {
-        case .automatic: systemIsDark ? Self.light : Self.dark
-        case .black: Self.dark
-        case .white: Self.light
-        case .design: nil
-        }
-    }
-
-    static let dark = RGBA(r: 0x11, g: 0x11, b: 0x11)
-    static let light = RGBA(r: 0xF2, g: 0xF2, b: 0xF2, a: 0xD9)
-}

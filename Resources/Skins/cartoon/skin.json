@@ -28,5 +28,9 @@
     "animation": { "from": 0.6, "to": 2.15, "duration": 0.4, "spin": true, "fade": true, "scatter": 0.4, "rotation": 35 },
     "color": "#B8322A",
     "weight": 1
-  }
+  },
+  "colors": [
+    { "name": "Dark", "wand": { "color": "#111111" } },
+    { "name": "Light", "wand": { "color": "#F2F2F2D9" } }
+  ]
 }

@@ -61,6 +61,8 @@ public enum SkinError: Error, Equatable {
     case invalidSVG(String)
     /// `pressed` and `idle` do not share the same viewBox.
     case viewBoxMismatch
+    /// A color scheme with an empty or repeated name.
+    case invalidScheme(String)
 }
 
 /// The SVG files of an SVG design, named relative to its folder.
@@ -117,6 +119,12 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
     public var wand = WandConfig()
     /// SVG designs: the click effects (`click` in the manifest).
     public var click = ClickConfig()
+    /// SVG designs: what changes in light mode (`light` in the manifest). `nil`: the base.
+    public var light: SkinVariant?
+    /// SVG designs: what changes in dark mode (`dark` in the manifest). `nil`: the base.
+    public var dark: SkinVariant?
+    /// SVG designs: named color schemes (`colors` in the manifest). `nil`: none.
+    public var colors: [ColorScheme]?
     /// SVG designs: file contents by frame, filled in by the loader.
     public var svgData: [FrameKind: Data] = [:]
     /// SVG designs: sleeve and click artwork contents by file name, filled in by the loader.
@@ -125,12 +133,13 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
     /// SVG designs: every extra file the manifest names (sleeve, then click artwork).
     public var assetNames: [String] {
         var names: [String] = []
-        for name in (wand.svg?.files ?? []) + (click.svg ?? []) where !names.contains(name) { names.append(name) }
+        let extra = (light?.fileNames ?? []) + (dark?.fileNames ?? []) + (colors ?? []).flatMap(\.fileNames)
+        for name in (wand.svg?.files ?? []) + (click.svg ?? []) + extra where !names.contains(name) { names.append(name) }
         return names
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, name, author, palette, frames, hotspot, svg, armAnchor, armWidth, arm, wand, click
+        case id, name, author, palette, frames, hotspot, svg, armAnchor, armWidth, arm, wand, click, light, dark, colors
     }
 
     public init(id: String, name: String, author: String? = nil,
@@ -138,6 +147,7 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
                 hotspot: Point = Point(x: 0, y: 0), svg: SVGFiles? = nil,
                 svgHotspot: SVGPoint? = nil, svgArmAnchor: SVGPoint? = nil, svgArmWidth: Double? = nil,
                 arm: String? = nil, wand: WandConfig = WandConfig(), click: ClickConfig = ClickConfig(),
+                light: SkinVariant? = nil, dark: SkinVariant? = nil, colors: [ColorScheme]? = nil,
                 svgData: [FrameKind: Data] = [:]) {
         self.id = id
         self.name = name
@@ -152,6 +162,9 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
         self.arm = arm
         self.wand = wand
         self.click = click
+        self.light = light
+        self.dark = dark
+        self.colors = colors
         self.svgData = svgData
     }
 
@@ -171,6 +184,9 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
             arm = try c.decodeIfPresent(String.self, forKey: .arm)
             wand = try c.decodeIfPresent(WandConfig.self, forKey: .wand) ?? WandConfig()
             click = try c.decodeIfPresent(ClickConfig.self, forKey: .click) ?? ClickConfig()
+            light = try c.decodeIfPresent(SkinVariant.self, forKey: .light)
+            dark = try c.decodeIfPresent(SkinVariant.self, forKey: .dark)
+            colors = try c.decodeIfPresent([ColorScheme].self, forKey: .colors)
         } else {
             // Pixel designs: palette and hotspot stay required, as documented in SKINS.md.
             palette = try c.decode([String: String].self, forKey: .palette)
@@ -191,6 +207,9 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
             try c.encodeIfPresent(arm, forKey: .arm)
             if wand != WandConfig() { try c.encode(wand, forKey: .wand) }
             if click != ClickConfig() { try c.encode(click, forKey: .click) }
+            try c.encodeIfPresent(light, forKey: .light)
+            try c.encodeIfPresent(dark, forKey: .dark)
+            try c.encodeIfPresent(colors, forKey: .colors)
         } else {
             try c.encode(palette, forKey: .palette)
             try c.encode(frames, forKey: .frames)
@@ -245,11 +264,13 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
             guard let data = assetData[name] else { throw SkinError.missingSVGFile(name) }
             guard (try? SVGDocument.parse(data)) != nil else { throw SkinError.invalidSVG(name) }
         }
+        try validateSchemes()
         try validateStyle()
+        try validateVariants(box: box)
     }
 
     /// A file name inside the design folder: no directories, no `..`, ends in `.svg`.
-    private static func isPlainSVGName(_ name: String) -> Bool {
+    static func isPlainSVGName(_ name: String) -> Bool {
         !name.isEmpty && !name.hasPrefix(".") && !name.contains("/") && !name.contains("\\")
             && name.lowercased().hasSuffix(".svg")
     }

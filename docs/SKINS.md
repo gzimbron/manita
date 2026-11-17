@@ -56,7 +56,7 @@ A design has three parts you can draw: the **hand** (`svg.idle`), the **sleeve**
 | `armWidth` | no | Older name of `wand.width`; `wand.width` wins when both are set. |
 | `arm` | no | Older name of `wand.color` (and the default burst color), `#RRGGBB`. Default `#111111`. |
 
-The **Color** setting overrides every color of the wand and the effects, except *Design's Own*, which uses the design's. The **Pointer Mood** still scales the wand's width (×0.7, ×0.9, ×1.05, ×1.2 from the lowest to the highest stop) and length, and the size of the click hop and burst.
+The design's own colors always apply (there is no color setting); use [`light` and `dark` blocks](#light-and-dark) to change them per appearance. The **Pointer Mood** still scales the wand's width (×0.7, ×0.9, ×1.05, ×1.2 from the lowest to the highest stop) and length, and the size of the click hop and burst.
 
 Rules (checked by `Skin.validate()`; the root `<svg>` is read for its `viewBox`, or `width`/`height` when there is none):
 
@@ -80,7 +80,7 @@ Rules (checked by `Skin.validate()`; the root `<svg>` is read for its `viewBox`,
 | `style` | `sleeve` | `sleeve`: a solid bar as wide as the cuff (today's look). `stick`: a metal telescopic pointer: three tube segments, each thinner than the last away from the hand, joined by collars. |
 | `fade` | `true` for `sleeve`, `false` for `stick` | Whether the wand fades out along its length. A sleeve that does not fade keeps the mood's opacity along its whole length; a stick is fully opaque. |
 | `svg` | none | The design's own sleeve: `{ "tile": "sleeve.svg", "cuff": "cuff.svg" }` (`cuff` optional). Replaces `style`. See below. |
-| `tint` | `false` | With `svg`: draw the sleeve art in the wand color (its shapes are used as a mask), so `color` and the **Color** setting apply to it. Without it the art keeps its own colors. |
+| `tint` | `false` | With `svg`: draw the sleeve art in the wand color (its shapes are used as a mask), so it is drawn in the `color` of the active appearance (see [Light and dark](#light-and-dark)). Without it the art keeps its own colors. |
 
 #### Drawing your own sleeve
 
@@ -105,12 +105,12 @@ The Glove's `sleeve.svg` is a plain 30 × 30 tile with `tint: true`, which looks
 
 | Field | Default | Meaning |
 | --- | --- | --- |
-| `bursts` | `classic` | Burst kinds, cycled one per effect, in order: `classic`, `rays`, `star`, `ring`. An empty list means the default. `classic` is the website's burst: 12 straight rays around a filled 10-point star, about 1.6× the hand's size at the default mood, behind the hand; its rotation, size and star position are randomized on every click. Its rays and star fill use `color` (always, whatever the **Color** setting says, so the design keeps its look); the star outline uses the wand's color, which the **Color** setting does change. |
+| `bursts` | `classic` | Burst kinds, cycled one per effect, in order: `classic`, `rays`, `star`, `ring`. An empty list means the default. `classic` is the website's burst: 12 straight rays around a filled 10-point star, about 1.6× the hand's size at the default mood, behind the hand; its rotation, size and star position are randomized on every click. Its rays and star fill use `color`; the star outline uses the wand's color (of the active appearance). |
 | `color` | the wand's color | `#RRGGBB` or `#RRGGBBAA`. |
 | `weight` | `1` | Line width multiplier, from 0.25 to 4. |
 | `svg` | none | The design's own click art: SVG files cycled one per effect. Replaces `bursts`. See below. |
 | `size` | `1.6` | With `svg`: size of the art in hand sizes at the default mood (from 0.25 to 6). |
-| `tint` | `false` | With `svg`: draw the art in `color` (its shapes are used as a mask), so the **Color** setting applies to it. Without it the art keeps its own colors. |
+| `tint` | `false` | With `svg`: draw the art in `color` (its shapes are used as a mask), so it is drawn in the `color` of the active appearance (see [Light and dark](#light-and-dark)). Without it the art keeps its own colors. |
 | `animation` | see below | With `svg`: how the art plays. |
 
 #### Drawing your own click effect
@@ -137,6 +137,49 @@ Rapid clicks overlap: up to 5 effects play at once, each to its end (a sixth cli
 The **Pointer Mood** and the click streak scale it like the `classic` burst. The Glove cycles three click effects, scattered up to 0.4 hand sizes and turned at most 35°: `burst-lines.svg` (12 rays), `burst-stars.svg` (three stars of different sizes) and `burst-kaboom.svg` (a spiky "kaboom" circle).
 
 Effects play from the click number chosen in the menu's **Effects From Click** (default 3; a rapid streak is clicks less than 0.45 s apart); they take about 0.3 s (0.4 s for `classic`, which has no trailing ring) and, for the other kinds, the faint ring that follows lasts at most 0.35 s after the burst. A design with an unknown `style` or burst kind, a bad color or an out-of-range `width`/`weight` is rejected and logged. These fields apply to SVG designs only; `svg.idle` is the cursor artwork.
+
+## Light and dark
+
+A design can look different in macOS Light and Dark Mode. Add optional `light` and `dark` blocks to `skin.json`; Manita draws the block that matches the system appearance and switches when macOS does. Each block overrides only what changes; anything missing comes from the base. A design without blocks looks the same in both.
+
+| Field | Overrides |
+| --- | --- |
+| `svg.idle`, `svg.pressed` | The hand files. They must have the same `viewBox` as the base hand. |
+| `wand` | Any `wand` field: `color`, `svg` (`tile`, `cuff`), `tint`, `width`, `style`, `fade`. |
+| `click` | Any `click` field: `color`, `svg`, `tint`, `size`, `animation`, `bursts`, `weight`. |
+
+Files named in a block follow the same rules as the base files (plain names in the design folder, existing, real SVG), and colors and ranges are validated like the base ones; a design with an invalid block is rejected.
+
+```json
+{
+  "wand": { "color": "#111111", "svg": { "tile": "sleeve.svg" }, "tint": true },
+  "dark": {
+    "wand": { "color": "#F2F2F2D9" },
+    "svg": { "idle": "idle-dark.svg" }
+  }
+}
+```
+
+The Glove does not use these blocks: it follows [color schemes](#color-schemes) instead. To preview an appearance: `Manita --render-pointer out.png <design> [size] [mood] light|dark`.
+
+## Color schemes
+
+A design can offer several named looks, chosen by the user from the **Colors ▸** menu (shown only when the design has 2 or more). Add a `colors` list to `skin.json`. Each scheme has a required `name` (non-empty, unique in the design), optional overrides with the same shape as a [`light`/`dark` block](#light-and-dark) (`svg.idle`, `svg.pressed`, `wand`, `click`), and optional `light` and `dark` blocks of its own. The first scheme is the default; the choice is remembered per design, and a saved name that no longer exists falls back to the first.
+
+Resolution order: the design base, then the scheme's overrides, then the scheme's block for the system appearance (if the scheme has none for it, the design-level `light`/`dark` block, then nothing). Files and colors are validated like the base ones; empty or duplicate names, or any invalid file or value in a scheme, reject the design.
+
+```json
+{
+  "wand": { "color": "#111111", "svg": { "tile": "sleeve.svg" }, "tint": true },
+  "colors": [
+    { "name": "Dark", "wand": { "color": "#111111" } },
+    { "name": "Light", "wand": { "color": "#F2F2F2D9" },
+      "dark": { "svg": { "idle": "idle-dark.svg" } } }
+  ]
+}
+```
+
+The Glove ships two schemes: **Dark** (default, a `#111111` sleeve) and **Light** (`#F2F2F2D9`), regardless of the system appearance, with the same red effects in both.
 
 ## Pixel designs (legacy)
 
@@ -192,7 +235,7 @@ Rules (checked by `Skin.validate()`):
 
 Pixel art is scaled by whole numbers (the **Size** setting: 1× draws each pixel 5 points wide, 8× draws it 12), so keep designs small: 12–24 px works well.
 
-Pixel designs have no `wand` or `click` fields: the arm is 28% of the hand width (scaled by the **Pointer Mood** like `armWidth`) and, with **Color** set to *Design's Own*, uses the palette's `#` color (black when there is none).
+Pixel designs have no `wand` or `click` fields: the arm is 28% of the hand width (scaled by the **Pointer Mood** like `armWidth`) and, uses the palette's `#` color (black when there is none).
 
 ## Adding a built-in design
 

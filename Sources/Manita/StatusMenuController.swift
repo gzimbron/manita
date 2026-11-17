@@ -91,9 +91,14 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         }
 
         menu.addItem(.separator())
-        menu.addItem(submenu("Color", options: PointerColor.allCases.map { color in
-            (color.title, prefs.pointerColor == color, { $0.pointerColor = color })
-        }))
+        // Color schemes belong to the active design; only worth showing when there is a choice.
+        if let design = designs.first(where: { $0.id == prefs.skinID }) ?? designs.first, design.schemeNames.count > 1 {
+            let names = design.schemeNames
+            let current = names.contains(prefs.colorSchemes[design.id] ?? "") ? prefs.colorSchemes[design.id]! : names[0]
+            menu.addItem(submenu("Colors", options: names.map { name in
+                (name, current == name, { $0.colorSchemes[design.id] = name })
+            }))
+        }
         menu.addItem(submenu("Size", options: Preferences.scaleRange.map { s in
             ("\(Preferences.displaySize(forScale: s))×", prefs.scale == s, { $0.scale = s })
         }))
@@ -209,17 +214,6 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
             NSLog("Manita: launch at login failed: %@", String(describing: error))
         }
         rebuild()
-    }
-}
-
-extension PointerColor {
-    var title: String {
-        switch self {
-        case .automatic: "Automatic (Light/Dark)"
-        case .black: "Black"
-        case .white: "White"
-        case .design: "Design's Own"
-        }
     }
 }
 

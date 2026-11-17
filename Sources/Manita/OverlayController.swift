@@ -51,16 +51,15 @@ final class OverlayController {
         }
     }
 
-    /// - Parameter color: sleeve and effects color; `nil` uses the design's own.
-    func configure(skin: Skin, scale: Int, showArm: Bool, mood: MoodStyle, color: CGColor?) {
+    /// - Parameter skin: the design already resolved for the current appearance (`Skin.resolved(for:)`).
+    func configure(skin: Skin, scale: Int, showArm: Bool, mood: MoodStyle) {
         guard let art = HandArtwork.render(skin, scale: scale) ?? HandArtwork.render(.classic, scale: scale)
         else { return }
         artwork = art
         style = mood
         click = art.click
-        // The Color setting overrides the design's colors unless it is Design's Own.
-        let wandInk = color ?? art.wandColor
-        let effectInk = color ?? art.outline
+        let wandInk = art.wandColor
+        let effectInk = art.outline
         let maxStrength = CGFloat(ClickStreak.maxIntensity)
 
         let hand = max(art.size.width, art.size.height)

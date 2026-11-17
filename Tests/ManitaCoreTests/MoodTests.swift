@@ -47,22 +47,12 @@ struct MoodTests {
         #expect(Preferences.scaleRange.contains(Preferences.default.scale))
     }
 
-    @Test func automaticColorFollowsTheSystemAppearance() {
-        #expect(Preferences.default.pointerColor == .automatic)
-        #expect(PointerColor.automatic.resolved(systemIsDark: false) == RGBA(r: 0x11, g: 0x11, b: 0x11))
-        #expect(PointerColor.automatic.resolved(systemIsDark: true) == PointerColor.white.resolved(systemIsDark: false))
-        #expect(PointerColor.black.resolved(systemIsDark: true) == RGBA(r: 0x11, g: 0x11, b: 0x11))
-        #expect(PointerColor.design.resolved(systemIsDark: true) == nil)
-    }
-
-    @Test func moodAndColorSurviveAStoreRoundTrip() throws {
+    @Test func moodSurvivesAStoreRoundTrip() throws {
         let defaults = try #require(UserDefaults(suiteName: "manita.tests.mood.\(UUID().uuidString)"))
         let store = PreferencesStore(defaults: defaults)
         var prefs = Preferences.default
         prefs.mood = 3
-        prefs.pointerColor = .white
         store.save(prefs)
         #expect(store.load().mood == 3)
-        #expect(store.load().pointerColor == .white)
     }
 }

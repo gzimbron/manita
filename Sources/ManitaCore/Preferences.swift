@@ -20,8 +20,8 @@ public struct Preferences: Codable, Equatable, Sendable {
     public var showArm: Bool
     /// Pointer mood, `Mood.range`: how bold the sleeve is and how hard clicks land.
     public var mood: Int
-    /// Color of the sleeve and click effects (Dark Mode support).
-    public var pointerColor: PointerColor
+    /// The chosen color scheme per design (design id -> scheme name). Missing or stale: the design's first.
+    public var colorSchemes: [String: String] = [:]
     /// Global shortcut that shows or hides the pointer.
     public var pointerHotkey: Hotkey
     /// Global shortcut that toggles presentation mode.
@@ -58,11 +58,10 @@ public struct Preferences: Codable, Equatable, Sendable {
 
     public init(isEnabled: Bool, soundEnabled: Bool, clickAnimationEnabled: Bool,
                 volume: Double, scale: Int, skinID: String, hideSystemCursor: Bool, showArm: Bool,
-                mood: Int = Mood.default, pointerColor: PointerColor = .automatic,
+                mood: Int = Mood.default,
                 pointerHotkey: Hotkey = .togglePointer, presentationHotkey: Hotkey = .presentationMode) {
         self.mood = mood
         self.effectsFromClick = 3
-        self.pointerColor = pointerColor
         self.pointerHotkey = pointerHotkey
         self.presentationHotkey = presentationHotkey
         self.showArm = showArm
@@ -90,8 +89,8 @@ public struct Preferences: Codable, Equatable, Sendable {
         showArm = try c.decodeIfPresent(Bool.self, forKey: .showArm) ?? d.showArm
         effectsFromClick = try c.decodeIfPresent(Int.self, forKey: .effectsFromClick) ?? d.effectsFromClick
         mood = try c.decodeIfPresent(Int.self, forKey: .mood) ?? d.mood
-        // A value this version cannot read falls back instead of failing the whole load.
-        pointerColor = (try? c.decodeIfPresent(PointerColor.self, forKey: .pointerColor)) ?? d.pointerColor
+        colorSchemes = (try? c.decodeIfPresent([String: String].self, forKey: .colorSchemes)) ?? [:]
+        // A saved `pointerColor` (removed setting) is ignored: unknown keys are skipped.
         pointerHotkey = (try? c.decodeIfPresent(Hotkey.self, forKey: .pointerHotkey)) ?? d.pointerHotkey
         presentationHotkey = (try? c.decodeIfPresent(Hotkey.self, forKey: .presentationHotkey)) ?? d.presentationHotkey
     }

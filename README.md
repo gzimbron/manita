@@ -21,7 +21,8 @@ Or download the signed and notarized `Manita-<version>.zip` from [GitHub Release
   - the sleeve gets wider, longer and more opaque (at the lowest stop it is thin, short and translucent);
   - the click hop goes further;
   - the burst gets bigger.
-- **Color** of the sleeve and click effects: *Automatic (Light/Dark)* (black on a light desktop, translucent light gray in Dark Mode, switching when macOS does), *Black*, *White*, or *Design's Own* (the design's own colors, or a pixel design's outline). The hand artwork itself is never recolored, and the classic burst keeps the design's red accent for its rays and star (only the star outline follows the setting).
+- **Light and Dark Mode**: a design can ship a light and a dark variant (files and colors); Manita draws the one that matches macOS and switches when macOS does.
+- **Color schemes**: a design can offer several named looks (the Glove ships *Dark*, the default, and *Light*); pick one from **Colors ▸**, remembered per design.
 - **Global shortcuts**, changeable from the menu: `⌃⌥P` shows/hides the pointer, `⌃⌥T` turns presentation mode on/off.
 - **Presentation mode**: click anywhere to call out details without pressing anything (see [Presentation mode](#presentation-mode)).
 - Fully configurable from the menu bar (see [Menu](#menu)): size 1×–8× (default 1×, the smallest), sound and volume, click animation and when effects start, sleeve, hiding the system pointer, your own SVG designs, launch at login.
@@ -102,8 +103,8 @@ From top to bottom:
 | **Presentation Mode** `⌃⌥T` | Checked while presentation mode is on. |
 | **Pointer Mood** slider | *Subtle* … *Look at me!*, four stops. |
 | Design list | The Glove and your own designs. Hidden while the Glove is the only design. |
-| **Color ▸** | *Automatic (Light/Dark)*, *Black*, *White*, *Design's Own*. |
 | **Size ▸** | 1× to 8× (default 1×, the smallest; 1× is the old 5×, about 65 pt, and each step adds 13 pt). Sizes saved by older versions keep their look: the old 5×–8× show as 1×–4×; anything smaller opens as 1×. |
+| **Colors ▸** | The active design's color schemes, with a check on the current one. Shown only when the design has 2 or more (the Glove has *Dark* and *Light*). |
 | **Designs ▸** | *Open Designs Folder…*, *Reload Designs*. |
 | **Animate on Click** | Click hop, burst and jab on/off. |
 | **Effects From Click ▸** | From which click of a rapid streak the burst plays: *Every Click*, or *Click 2 of a Streak* … *Click 10 of a Streak* (default *Click 3 of a Streak*). The jab and shake start from the third click or this number, whichever is higher. |
