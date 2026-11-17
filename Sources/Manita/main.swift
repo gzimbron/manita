@@ -6,7 +6,7 @@ import ManitaCore
 let arguments = CommandLine.arguments
 if let flag = arguments.firstIndex(of: "--render-preview") {
     guard arguments.count > flag + 1 else {
-        FileHandle.standardError.write(Data("Usage: Manita --render-preview <out.png> [design-id|design.json] [scale 1-8]\n".utf8))
+        FileHandle.standardError.write(Data("Usage: Manita --render-preview <out.png> [design-id|design.json] [size 1-8]\n".utf8))
         exit(2)
     }
     exit(MainActor.assumeIsolated { PreviewRenderer.run(Array(arguments[(flag + 1)...])) })
@@ -16,7 +16,7 @@ if let flag = arguments.firstIndex(of: "--render-preview") {
 // pointer (sleeve, hand, click burst) as it looks on screen for that mood, and exits.
 if let flag = arguments.firstIndex(of: "--render-pointer") {
     guard arguments.count > flag + 1 else {
-        FileHandle.standardError.write(Data("Usage: Manita --render-pointer <out.png> [design-id] [scale 1-8] [mood 0-3] [light|dark]\n".utf8))
+        FileHandle.standardError.write(Data("Usage: Manita --render-pointer <out.png> [design-id] [size 1-8] [mood 0-3] [light|dark]\n".utf8))
         exit(2)
     }
     exit(MainActor.assumeIsolated { PreviewRenderer.runPointer(Array(arguments[(flag + 1)...])) })

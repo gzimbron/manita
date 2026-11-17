@@ -24,7 +24,7 @@ Or download the signed and notarized `Manita-<version>.zip` from [GitHub Release
 - **Color** of the sleeve and click effects: *Automatic (Light/Dark)* (black on a light desktop, translucent light gray in Dark Mode, switching when macOS does), *Black*, *White*, or *Design's Own* (the design's own colors, or a pixel design's outline). The hand artwork itself is never recolored, and the classic burst keeps the design's red accent for its rays and star (only the star outline follows the setting).
 - **Global shortcuts**, changeable from the menu: `⌃⌥P` shows/hides the pointer, `⌃⌥T` turns presentation mode on/off.
 - **Presentation mode**: click anywhere to call out details without pressing anything (see [Presentation mode](#presentation-mode)).
-- Fully configurable from the menu bar (see [Menu](#menu)): size 1×–8× (default 5×), sound and volume, click animation and when effects start, sleeve, hiding the system pointer, your own SVG designs, launch at login.
+- Fully configurable from the menu bar (see [Menu](#menu)): size 1×–8× (default 1×, the smallest), sound and volume, click animation and when effects start, sleeve, hiding the system pointer, your own SVG designs, launch at login.
 - The pointer is drawn on every display (one overlay surface per screen), so the hand and its sleeve cross from one screen to the next without vanishing.
 - No bundled audio or raster assets for the pointer: art is SVG, and the click sound is generated in code.
 
@@ -70,13 +70,13 @@ The `Makefile` wraps the commands above. Run `make` (or `make help`) to list the
 | Variable | Default | Used by | Meaning |
 | --- | --- | --- | --- |
 | `DESIGN` | `cartoon` | `preview`, `pointer` | Bundled design id, design folder or `.json` file. |
-| `SCALE` | `5` | `pointer` | Size setting, 1–8. |
+| `SIZE` | `1` | `pointer` | Size setting, 1–8. |
 | `MOOD` | `1` | `pointer` | Pointer Mood, 0–3. |
 | `APPEARANCE` | `light` | `pointer` | `light` or `dark`. |
 | `OUT` | `/tmp/manita-pointer.png` | `pointer` | Output PNG. |
 
 ```sh
-make pointer DESIGN=cartoon MOOD=3 APPEARANCE=dark
+make pointer DESIGN=cartoon SIZE=2 MOOD=3 APPEARANCE=dark
 make preview DESIGN=path/to/my-design   # a path without spaces
 ```
 
@@ -103,7 +103,7 @@ From top to bottom:
 | **Pointer Mood** slider | *Subtle* … *Look at me!*, four stops. |
 | Design list | The Glove and your own designs. Hidden while the Glove is the only design. |
 | **Color ▸** | *Automatic (Light/Dark)*, *Black*, *White*, *Design's Own*. |
-| **Size ▸** | 1× to 8× (default 5×). |
+| **Size ▸** | 1× to 8× (default 1×, the smallest; 1× is the old 5×, about 65 pt, and each step adds 13 pt). Sizes saved by older versions keep their look: the old 5×–8× show as 1×–4×; anything smaller opens as 1×. |
 | **Designs ▸** | *Open Designs Folder…*, *Reload Designs*. |
 | **Animate on Click** | Click hop, burst and jab on/off. |
 | **Effects From Click ▸** | From which click of a rapid streak the burst plays: *Every Click*, or *Click 2 of a Streak* … *Click 10 of a Streak* (default *Click 3 of a Streak*). The jab and shake start from the third click or this number, whichever is higher. |
@@ -142,18 +142,18 @@ Designs ("skins") are folders with a `skin.json` and SVG files (`idle.svg`, opti
 then choose **Designs → Reload Designs** in the menu. Format and examples: [docs/SKINS.md](docs/SKINS.md). Preview a design without launching the app:
 
 ```sh
-swift build && .build/debug/Manita --render-preview preview.png path/to/design-folder 6
+swift build && .build/debug/Manita --render-preview preview.png path/to/design-folder 2
 ```
 
-`--render-preview <out.png> [design-id|design folder|design.json] [scale 1-8]` draws the idle and pressed artwork side by side (a preview aid; the app itself only shows the idle frame). Defaults: the Glove, scale 6.
+`--render-preview <out.png> [design-id|design folder|design.json] [size 1-8]` draws the idle and pressed artwork side by side (a preview aid; the app itself only shows the idle frame). Defaults: the Glove, size 2.
 
 To see the whole pointer as it looks on screen (sleeve, hand and the classic click burst) for one mood:
 
 ```sh
-.build/debug/Manita --render-pointer pointer.png cartoon 5 3 dark
+.build/debug/Manita --render-pointer pointer.png cartoon 1 3 dark
 ```
 
-`--render-pointer <out.png> [design-id] [scale 1-8] [mood 0-3] [light|dark]` takes the bundled design id (`cartoon`), a design folder or a `.json` file, and uses the *Automatic* color for the given appearance. Defaults: `cartoon`, scale 5, mood 1, `light`. Very long sleeves are cut off at 700 pt.
+`--render-pointer <out.png> [design-id] [size 1-8] [mood 0-3] [light|dark]` takes the bundled design id (`cartoon`), a design folder or a `.json` file, and uses the *Automatic* color for the given appearance. Defaults: `cartoon`, size 1, mood 1, `light`. Very long sleeves are cut off at 700 pt.
 
 ## Documentation
 

@@ -61,11 +61,11 @@ The **Color** setting overrides every color of the wand and the effects, except 
 Rules (checked by `Skin.validate()`; the root `<svg>` is read for its `viewBox`, or `width`/`height` when there is none):
 
 - File names cannot contain a path (`/`, `..`); a missing file, a file that is not an SVG, or a `pressed` with a different `viewBox` rejects the design. The same goes for the files named by `wand.svg` and `click.svg`.
-- The longer side of the `viewBox` is drawn at `Size × 13` points (Size 1–8; the default Size 5 ≈ 65 pt), aspect ratio preserved, at Retina resolution.
+- The longer side of the `viewBox` is drawn at `(Size + 4) × 13` points (Size 1–8: the default and smallest, 1×, ≈ 65 pt; 8× ≈ 156 pt), aspect ratio preserved, at Retina resolution.
 - The wand (the menu calls it the sleeve) is drawn by the app (a bar from `armAnchor`, opaque then fading out, unless `wand` says otherwise), leaning 20° down-right: tilt the glove about 20° to the left so the cuff lines up with it. Its length, opacity and how soon it fades come from the **Pointer Mood**, not from the design.
-- Preview the whole pointer with a mood and appearance: `.build/debug/Manita --render-pointer out.png path/to/design-folder 5 3 dark` (a bundled id such as `cartoon` works too).
+- Preview the whole pointer with a mood and appearance: `.build/debug/Manita --render-pointer out.png path/to/design-folder 1 3 dark` (a bundled id such as `cartoon` works too).
 - Use the macOS SVG subset: paths, basic shapes, `fill`, `stroke`, `transform`. Avoid scripts, filters, external references and text.
-- Preview: `.build/debug/Manita --render-preview out.png path/to/design-folder 6`.
+- Preview: `.build/debug/Manita --render-preview out.png path/to/design-folder 2`.
 
 ### Wand
 
@@ -188,7 +188,7 @@ Rules (checked by `Skin.validate()`):
 - Every row in a frame has the same width; frames may differ in size.
 - Every non-transparent character must exist in `palette`.
 
-Pixel art is scaled by whole numbers (the **Size** setting, 1–8), so keep designs small: 12–24 px works well.
+Pixel art is scaled by whole numbers (the **Size** setting: 1× draws each pixel 5 points wide, 8× draws it 12), so keep designs small: 12–24 px works well.
 
 Pixel designs have no `wand` or `click` fields: the arm is 28% of the hand width (scaled by the **Pointer Mood** like `armWidth`) and, with **Color** set to *Design's Own*, uses the palette's `#` color (black when there is none).
 

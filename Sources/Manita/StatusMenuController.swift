@@ -95,7 +95,7 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
             (color.title, prefs.pointerColor == color, { $0.pointerColor = color })
         }))
         menu.addItem(submenu("Size", options: Preferences.scaleRange.map { s in
-            ("\(s)×", prefs.scale == s, { $0.scale = s })
+            ("\(Preferences.displaySize(forScale: s))×", prefs.scale == s, { $0.scale = s })
         }))
         let designsMenu = NSMenuItem(title: "Designs", action: nil, keyEquivalent: "")
         designsMenu.submenu = NSMenu()

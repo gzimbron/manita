@@ -13,10 +13,10 @@ enum PreviewRenderer {
         }
         let out = URL(fileURLWithPath: args[0])
         let skinArg = args.count > 1 ? args[1] : Skin.cartoon.id
-        let range = Preferences.scaleRange
-        let scaleArg = args.count > 2 ? args[2] : "6"
-        guard let scale = Int(scaleArg), range.contains(scale) else {
-            return fail("Invalid scale '\(scaleArg)': expected an integer from \(range.lowerBound) to \(range.upperBound)")
+        let range = Preferences.displaySizeRange
+        let scaleArg = args.count > 2 ? args[2] : "2"
+        guard let scale = Int(scaleArg).flatMap(Preferences.scale(forDisplaySize:)) else {
+            return fail("Invalid size '\(scaleArg)': expected an integer from \(range.lowerBound) to \(range.upperBound)")
         }
 
         var registry = SkinRegistry.appDefault()
@@ -77,9 +77,10 @@ enum PreviewRenderer {
         } else {
             return fail("Unknown design '\(skinArg)'. Built-in designs: \(registry.skins.map(\.id).joined(separator: ", ")), or pass a design folder or .json file")
         }
-        let scaleArg = args.count > 2 ? args[2] : String(Preferences.default.scale)
-        guard let scale = Int(scaleArg), Preferences.scaleRange.contains(scale) else {
-            return fail("Invalid scale '\(scaleArg)': expected an integer from \(Preferences.scaleRange.lowerBound) to \(Preferences.scaleRange.upperBound)")
+        let range = Preferences.displaySizeRange
+        let scaleArg = args.count > 2 ? args[2] : String(Preferences.displaySize(forScale: Preferences.default.scale))
+        guard let scale = Int(scaleArg).flatMap(Preferences.scale(forDisplaySize:)) else {
+            return fail("Invalid size '\(scaleArg)': expected an integer from \(range.lowerBound) to \(range.upperBound)")
         }
         let moodArg = args.count > 3 ? args[3] : String(Mood.default)
         guard let mood = Int(moodArg), Mood.range.contains(mood) else {

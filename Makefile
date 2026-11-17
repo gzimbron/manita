@@ -2,7 +2,7 @@
 
 APP        := build/Manita.app
 DESIGN     ?= cartoon
-SCALE      ?= 5
+SIZE       ?= 1
 MOOD       ?= 1
 APPEARANCE ?= light
 OUT        ?= /tmp/manita-pointer.png
@@ -32,11 +32,11 @@ release: ## Build the release app bundle
 	scripts/build-app.sh
 
 preview: build ## Render the design's artwork: make preview DESIGN=path/to/folder
-	.build/debug/Manita --render-preview /tmp/manita-preview.png $(DESIGN) 6
+	.build/debug/Manita --render-preview /tmp/manita-preview.png $(DESIGN) 2
 	open /tmp/manita-preview.png
 
-pointer: build ## Render the whole pointer: make pointer DESIGN=cartoon MOOD=3 APPEARANCE=dark
-	.build/debug/Manita --render-pointer $(OUT) $(DESIGN) $(SCALE) $(MOOD) $(APPEARANCE)
+pointer: build ## Render the whole pointer: make pointer DESIGN=cartoon SIZE=2 MOOD=3 APPEARANCE=dark
+	.build/debug/Manita --render-pointer $(OUT) $(DESIGN) $(SIZE) $(MOOD) $(APPEARANCE)
 	open $(OUT)
 
 clean: ## Remove build outputs

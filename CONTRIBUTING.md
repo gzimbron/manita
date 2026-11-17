@@ -35,7 +35,7 @@ Before opening a PR that touches `Sources/Manita`:
 - [ ] **Show Sleeve** toggles the arm.
 - [ ] Size, Color, Pointer Mood and Effects From Click changes apply immediately and persist after relaunch.
 - [ ] Cartoon glove renders from the SVGs, also in `build/Manita.app` (`scripts/build-app.sh`), and the arm is solid near the cuff and fades at its far end.
-- [ ] Design art changes: check `--render-preview out.png <design> 6` and `--render-pointer out.png <design> 5 1 light`.
+- [ ] Design art changes: check `--render-preview out.png <design> 2` and `--render-pointer out.png <design> 1 1 light`.
 
 ## Designs
 

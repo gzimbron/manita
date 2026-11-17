@@ -31,7 +31,19 @@ public struct Preferences: Codable, Equatable, Sendable {
     public var effectsFromClick: Int
     public static let effectsFromClickRange = 1...10
 
-    public static let scaleRange = 1...8
+    /// Internal drawing scale (13 pt per step for SVG designs). The default, 5, is the smallest.
+    public static let scaleRange = 5...12
+    /// What the menu and the render commands call the size: the smallest (default) scale is 1×.
+    public static let displaySizeRange = 1...8
+    private static let displayOffset = scaleRange.lowerBound - displaySizeRange.lowerBound
+
+    /// The size shown to people (1–8) for an internal scale (5–12).
+    public static func displaySize(forScale scale: Int) -> Int { scale - displayOffset }
+
+    /// The internal scale for a shown size; `nil` outside 1–8.
+    public static func scale(forDisplaySize size: Int) -> Int? {
+        displaySizeRange.contains(size) ? size + displayOffset : nil
+    }
 
     public static let `default` = Preferences(
         isEnabled: true,
