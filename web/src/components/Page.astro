@@ -1,6 +1,7 @@
 ---
 import Hand from "./Hand.astro";
 import Keys from "./Keys.astro";
+import { SKINS, DEFAULT_MOOD } from "../scripts/skins";
 import { getDict, locales, localePath, dictionaries, type Locale } from "../i18n";
 import "../styles/global.css";
 
@@ -126,6 +127,26 @@ const copyAttrs = {
       <section class="demo" id="demo" aria-labelledby="demo-title">
         <h2 id="demo-title">{t.demo.title}</h2>
         <p class="lede">{t.demo.lede}</p>
+        <form class="demo-controls" data-demo-controls data-moods={t.demo.moods.join("|")} onsubmit="return false">
+          <label>
+            <span>{t.demo.design}</span>
+            <select data-control="skin">
+              {SKINS.map((s) => <option value={s.id}>{t.demo.designs[s.id] ?? s.name}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>{t.demo.color}</span>
+            <select data-control="color" {...Object.fromEntries(Object.entries(t.demo.colors).map(([k, v]) => [`data-c${k}`, v]))}></select>
+          </label>
+          <label>
+            <span>{t.demo.size} <output data-control="size-out">1×</output></span>
+            <input type="range" data-control="size" min="1" max="8" step="1" value="1" />
+          </label>
+          <label>
+            <span>{t.demo.mood} <output data-control="mood-out">{t.demo.moods[DEFAULT_MOOD]}</output></span>
+            <input type="range" data-control="mood" min="0" max="3" step="1" value={DEFAULT_MOOD} />
+          </label>
+        </form>
         <div class="stage" data-stage data-jab={t.demo.jab} aria-hidden="true">
           <Hand />
           <p class="stage-hint">{t.demo.hint}</p>

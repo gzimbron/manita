@@ -35,6 +35,9 @@ final class PointerLayers {
     /// The `stick` wand: filled segments and collars, optionally faded by `stickFade`.
     private let stickLayer = CAShapeLayer()
     private let stickFade = CAGradientLayer()
+    /// The design's own sleeve (`wand.svg`): one strip image laid along the sleeve, faded by `artFade`.
+    private let artLayer = CALayer()
+    private let artFade = CAGradientLayer()
     let hand = CALayer()
 
     init() {
@@ -46,6 +49,8 @@ final class PointerLayers {
         stickFade.colors = [NSColor.black.cgColor, NSColor.black.cgColor, NSColor.clear.cgColor]
         body.addSublayer(armLayer)
         body.addSublayer(stickLayer)
+        artLayer.mask = artFade
+        body.addSublayer(artLayer)
         body.addSublayer(hand)
         root.addSublayer(body)
         root.instanceDelay = PointerSurface.trailDelay
@@ -94,7 +99,28 @@ final class PointerLayers {
         armLayer.locations = fadeLocations
         armLayer.startPoint = fadeStart
         armLayer.endPoint = fadeEnd
-        armLayer.isHidden = !spec.showArm || isStick
+        let strip = spec.showArm
+            ? art.sleeveStrip(width: armWidth, length: armLength, ink: wandInk) : nil
+        let hasArt = art.sleeveTile != nil
+        armLayer.isHidden = !spec.showArm || isStick || hasArt
+
+        // Design's sleeve: the strip hangs from `start` (top-center anchor), turned to the sleeve direction.
+        artLayer.setAffineTransform(.identity)
+        artLayer.anchorPoint = CGPoint(x: 0.5, y: 1)
+        artLayer.bounds = CGRect(x: 0, y: 0, width: armWidth, height: armLength)
+        artLayer.position = start
+        artLayer.setAffineTransform(CGAffineTransform(rotationAngle: atan2(direction.dx, -direction.dy)))
+        artLayer.contents = strip
+        artLayer.contentsScale = art.contentsScale
+        artLayer.opacity = Float(mood.armOpacity)
+        artFade.frame = artLayer.bounds
+        artFade.startPoint = CGPoint(x: 0.5, y: 1)
+        artFade.endPoint = CGPoint(x: 0.5, y: 0)
+        artFade.locations = fadeLocations
+        artFade.colors = fades
+            ? [NSColor.black.cgColor, NSColor.black.cgColor, NSColor.clear.cgColor]
+            : [NSColor.black.cgColor, NSColor.black.cgColor]
+        artLayer.isHidden = !spec.showArm || !hasArt
 
         // Stick: telescopic segments, thinner away from the hand, joined by collars.
         stickLayer.frame = bounds
@@ -108,7 +134,7 @@ final class PointerLayers {
             ? [NSColor.black.cgColor, NSColor.black.cgColor, NSColor.clear.cgColor]
             : [NSColor.black.cgColor, NSColor.black.cgColor]
         stickLayer.mask = fades ? stickFade : nil
-        stickLayer.isHidden = !spec.showArm || !isStick
+        stickLayer.isHidden = !spec.showArm || !isStick || hasArt
     }
 
     /// The telescopic pointer: three tube segments, each thinner than the last, with a collar at each joint.
@@ -161,6 +187,12 @@ final class PointerSurface {
     /// The classic burst's filled, outlined star; drawn above the rays, empty for other kinds.
     let starLayer = CAShapeLayer()
     let lingerLayer = CAShapeLayer()
+    /// How many click art effects can play at once; rapid clicks take the slots in turn, so each one
+    /// plays to its end instead of cutting the previous one short.
+    static let artSlots = 5
+    /// The design's own click art (`click.svg`), one pair per slot: `layer` plays the animation,
+    /// `image` holds the picture turned to that click's angle.
+    let artBursts: [(layer: CALayer, image: CALayer)] = (0..<PointerSurface.artSlots).map { _ in (CALayer(), CALayer()) }
     private let panel: NSPanel?
     private let canvas: CALayer
     private(set) var spec: PointerSpec?
@@ -201,6 +233,11 @@ final class PointerSurface {
             layer.opacity = 0
             canvas.addSublayer(layer)
         }
+        for art in artBursts {
+            art.layer.opacity = 0
+            art.layer.addSublayer(art.image)
+            canvas.addSublayer(art.layer)
+        }
         // The hand is drawn above its own burst.
         canvas.addSublayer(pointer.root)
     }
@@ -240,13 +277,19 @@ final class PointerSurface {
     }
 
     /// Centers the burst layers on a global click point, in this display's coordinates.
-    func placeEffects(at point: CGPoint) {
+    /// - Parameter slot: also (only) moves that click art slot; the other slots keep playing where they are.
+    func placeEffects(at point: CGPoint, slot: Int? = nil) {
         guard let spec else { return }
         let side = spec.effectsSide
         let rect = CGRect(x: point.x - side / 2, y: point.y - side / 2, width: side, height: side)
-        effectsRect = rect
+        // Effects still playing elsewhere keep the window up: the rect grows to hold them all.
+        effectsRect = effectsRect.map { $0.union(rect) } ?? rect
         let local = CGPoint(x: point.x - frame.minX, y: point.y - frame.minY)
-        for layer in [burstLayer, starLayer, lingerLayer] { layer.position = local }
+        if let slot {
+            artBursts[slot].layer.position = local
+        } else {
+            for layer in [burstLayer, starLayer, lingerLayer] { layer.position = local }
+        }
         place(hotspot: hotspot)
     }
 

@@ -1,5 +1,23 @@
 # Manita 👆
 
+<p align="center">
+  <a href="https://gzimbron.github.io/manita/"><img src="web/public/og.png" alt="Manita: a cartoon gloved hand pointer for macOS" width="720"></a>
+</p>
+
+<p align="center">
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/github/v/release/gzimbron/manita" alt="Latest release"></a>
+  <a href="https://github.com/gzimbron/manita/releases"><img src="https://img.shields.io/github/downloads/gzimbron/manita/total" alt="Downloads"></a>
+  <a href="https://github.com/gzimbron/manita/stargazers"><img src="https://img.shields.io/github/stars/gzimbron/manita?style=flat" alt="Stars"></a>
+  <img src="https://img.shields.io/badge/macOS-26%2B-black?logo=apple" alt="macOS 26+">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/gzimbron/manita" alt="MIT license"></a>
+</p>
+
+<p align="center">
+  <a href="https://gzimbron.github.io/manita/"><b>Website</b></a> ·
+  <a href="https://gzimbron.github.io/manita/es/">Español</a> ·
+  <a href="docs/SKINS.md">Make a design</a>
+</p>
+
 A tiny macOS menu bar utility that turns your pointer into an **old-cartoon gloved hand** with a long trailing sleeve (or a telescopic pointer, if a design asks for it), a hop on every click, a burst and a jab on rapid clicks, and a natural click sound. Every effect can be switched off.
 
 Current version: **1.0.0**, the first public release. Website: <https://gzimbron.github.io/manita/> (Spanish: <https://gzimbron.github.io/manita/es/>).
@@ -14,17 +32,18 @@ Or download the signed and notarized `Manita-<version>.zip` from [GitHub Release
 
 ## Features
 
-- A hand that follows the pointer across every app, Space and full-screen window. The only bundled design is the **Glove** (SVG artwork); add your own SVG (or legacy pixel) designs in the designs folder. Each design configures its cursor, its wand (`wand`) and its click effects (`click`) in `skin.json` (see [docs/SKINS.md](docs/SKINS.md)).
+- A hand that follows the pointer across every app, Space and full-screen window. Three designs are bundled: **Cartoon** (a gloved hand), **Cat Paw** (a raised paw with a claw for a pointer and a furry leg; *Black* (default), *Tabby* and *Gray*; paw prints, hearts and claw scratches) and **Magic Wand** (the star is the pointer and the wand trails behind it as the sleeve; magic click effects: sparkles, stardust, a spiral and a rune circle); add your own SVG (or legacy pixel) designs in the designs folder. Each design draws its hand and, optionally, its own sleeve (`wand.svg`) and click effect (`click.svg`), configured in `skin.json` (see [docs/SKINS.md](docs/SKINS.md)).
 - On every click the hand (and its sleeve) hops up and to the left, where the finger points, and springs back, and a short, natural click sound (synthesized in code) plays. The hand always keeps its idle artwork; it never swaps to a pressed frame.
 - **Rapid clicks** (presses less than 0.45 s apart) form a streak. From the click number set in **Effects From Click** (default 3, from 1 to 10) the classic burst plays where the click landed: 12 rays and a red star, with rotation, size and star position randomized on every click. From the third rapid click (or the chosen number, if higher) the hand also jabs and shakes sideways with a faded trailing copy, and each further click in the streak hits slightly harder (capped). The effects take well under half a second and leave nothing behind.
 - **Pointer Mood**: a four-stop slider from *Subtle* to *Look at me!* (default: the second stop). It never changes the hand itself, only the sleeve and how hard a click lands:
   - the sleeve gets wider, longer and more opaque (at the lowest stop it is thin, short and translucent);
   - the click hop goes further;
   - the burst gets bigger.
-- **Color** of the sleeve and click effects: *Automatic (Light/Dark)* (black on a light desktop, translucent light gray in Dark Mode, switching when macOS does), *Black*, *White*, or *Design's Own* (the design's own colors, or a pixel design's outline). The hand artwork itself is never recolored, and the classic burst keeps the design's red accent for its rays and star (only the star outline follows the setting).
+- **Light and Dark Mode**: a design can ship a light and a dark variant (files and colors); Manita draws the one that matches macOS and switches when macOS does.
+- **Color schemes**: a design can offer several named looks (*Cartoon* ships *Dark*, the default, and *Light*; *Magic Wand* ships *Classic* (black with a white tip, the default), *Purple* and *Gold*); pick one from **Design ▸ <design> ▸**, remembered per design.
 - **Global shortcuts**, changeable from the menu: `⌃⌥P` shows/hides the pointer, `⌃⌥T` turns presentation mode on/off.
 - **Presentation mode**: click anywhere to call out details without pressing anything (see [Presentation mode](#presentation-mode)).
-- Fully configurable from the menu bar (see [Menu](#menu)): size 1×–8× (default 5×), sound and volume, click animation and when effects start, sleeve, hiding the system pointer, your own SVG designs, launch at login.
+- Fully configurable from the menu bar (see [Menu](#menu)): size 1×–8× (default 1×, the smallest), sound and volume, click animation and when effects start, sleeve, hiding the system pointer, your own SVG designs, launch at login.
 - The pointer is drawn on every display (one overlay surface per screen), so the hand and its sleeve cross from one screen to the next without vanishing.
 - No bundled audio or raster assets for the pointer: art is SVG, and the click sound is generated in code.
 
@@ -46,6 +65,38 @@ For development:
 swift build                   # compile
 swift test                    # run unit tests (ManitaCore)
 scripts/build-app.sh debug    # debug .app bundle
+```
+
+### Make shortcuts
+
+The `Makefile` wraps the commands above. Run `make` (or `make help`) to list them. Day to day, `make open` is all you need.
+
+| Command | What it does |
+| --- | --- |
+| `make help` | Lists the commands (the default target). |
+| `make build` | Compiles a debug build (`swift build`). |
+| `make test` | Runs the unit tests (`swift test`). |
+| `make app` | Builds the debug app bundle, `build/Manita.app` (`scripts/build-app.sh debug`). |
+| `make open` | Quits a running Manita, rebuilds the debug app and opens it. |
+| `make quit` | Quits a running Manita, if any. |
+| `make release` | Builds the release app bundle (`scripts/build-app.sh`). |
+| `make preview` | Renders a design's artwork to `/tmp/manita-preview.png` and opens it. |
+| `make pointer` | Renders the whole pointer (sleeve, hand, click burst) and opens it. |
+| `make clean` | Removes the build outputs (`.build`, `build`). |
+
+`preview` and `pointer` take variables:
+
+| Variable | Default | Used by | Meaning |
+| --- | --- | --- | --- |
+| `DESIGN` | `cartoon` | `preview`, `pointer` | Bundled design id, design folder or `.json` file. |
+| `SIZE` | `1` | `pointer` | Size setting, 1–8. |
+| `MOOD` | `1` | `pointer` | Pointer Mood, 0–3. |
+| `APPEARANCE` | `light` | `pointer` | `light` or `dark`. |
+| `OUT` | `/tmp/manita-pointer.png` | `pointer` | Output PNG. |
+
+```sh
+make pointer DESIGN=cartoon SIZE=2 MOOD=3 APPEARANCE=dark
+make preview DESIGN=path/to/my-design   # a path without spaces
 ```
 
 The icon appears in the menu bar (there is no Dock icon). Quit from the menu.
@@ -70,16 +121,15 @@ From top to bottom:
 | **Presentation Mode** `⌃⌥T` | Checked while presentation mode is on. |
 | **Pointer Mood** slider | *Subtle* … *Look at me!*, four stops. |
 | Design list | The Glove and your own designs. Hidden while the Glove is the only design. |
-| **Color ▸** | *Automatic (Light/Dark)*, *Black*, *White*, *Design's Own*. |
-| **Size ▸** | 1× to 8× (default 5×). |
-| **Designs ▸** | *Open Designs Folder…*, *Reload Designs*. |
+| **Size ▸** | 1× to 8× (default 1×, the smallest; 1× is the old 5×, about 65 pt, and each step adds 13 pt). Sizes saved by older versions keep their look: the old 5×–8× show as 1×–4×; anything smaller opens as 1×. |
+| **Design ▸** | Every design, the active one checked. A design with 2 or more color schemes opens a submenu of them (*Cartoon ▸ Dark (Default) / Light*); picking one selects the design and the scheme. Then *Open Designs Folder…* and *Reload Designs*. |
 | **Animate on Click** | Click hop, burst and jab on/off. |
 | **Effects From Click ▸** | From which click of a rapid streak the burst plays: *Every Click*, or *Click 2 of a Streak* … *Click 10 of a Streak* (default *Click 3 of a Streak*). The jab and shake start from the third click or this number, whichever is higher. |
 | **Click Sound**, **Volume ▸** | Sound on/off; 25%, 50%, 75%, 100%. |
 | **Show Sleeve** | The trailing sleeve on/off. |
 | **Hide System Pointer** | Hide the real macOS pointer under the hand. |
 | **Shortcuts ▸** | Change the two global shortcuts, or *Reset to Defaults*. |
-| **Launch at Login**, **About Manita**, **Quit Manita** `⌘Q` | |
+| **Launch at Login**, **About Manita**, **Quit Manita** `⌘Q` | *About Manita* shows the version and a link to the [GitHub repository](https://github.com/gzimbron/manita). |
 
 The shortcuts shown next to the first two items are the current global shortcuts; they work anywhere, with the menu closed.
 
@@ -107,21 +157,21 @@ Designs ("skins") are folders with a `skin.json` and SVG files (`idle.svg`, opti
 ~/Library/Application Support/Manita/Skins/
 ```
 
-then choose **Designs → Reload Designs** in the menu. Format and examples: [docs/SKINS.md](docs/SKINS.md). Preview a design without launching the app:
+then choose **Design → Reload Designs** in the menu. Format and examples: [docs/SKINS.md](docs/SKINS.md). Preview a design without launching the app:
 
 ```sh
-swift build && .build/debug/Manita --render-preview preview.png path/to/design-folder 6
+swift build && .build/debug/Manita --render-preview preview.png path/to/design-folder 2
 ```
 
-`--render-preview <out.png> [design-id|design folder|design.json] [scale 1-8]` draws the idle and pressed artwork side by side (a preview aid; the app itself only shows the idle frame). Defaults: the Glove, scale 6.
+`--render-preview <out.png> [design-id|design folder|design.json] [size 1-8]` draws the idle and pressed artwork side by side (a preview aid; the app itself only shows the idle frame). Defaults: the Glove, size 2.
 
 To see the whole pointer as it looks on screen (sleeve, hand and the classic click burst) for one mood:
 
 ```sh
-.build/debug/Manita --render-pointer pointer.png cartoon 5 3 dark
+.build/debug/Manita --render-pointer pointer.png cartoon 1 3 dark
 ```
 
-`--render-pointer <out.png> [design-id] [scale 1-8] [mood 0-3] [light|dark]` takes the bundled design id (`cartoon`), a design folder or a `.json` file, and uses the *Automatic* color for the given appearance. Defaults: `cartoon`, scale 5, mood 1, `light`. Very long sleeves are cut off at 700 pt.
+`--render-pointer <out.png> [design-id] [size 1-8] [mood 0-3] [light|dark]` takes the bundled design id (`cartoon`), a design folder or a `.json` file, and uses the *Automatic* color for the given appearance. Defaults: `cartoon`, size 1, mood 1, `light`. Very long sleeves are cut off at 700 pt.
 
 ## Documentation
 
@@ -140,6 +190,18 @@ To see the whole pointer as it looks on screen (sleeve, hand and the classic cli
 - Manita restores the cursors when you quit, disable it, or when it receives SIGTERM/SIGINT. If it crashes or is force-killed (SIGKILL), the pointer may stay invisible: relaunch Manita and quit it (or turn off *Hide System Pointer*), or log out and back in.
 - Builds you compile yourself are not notarized: on first launch you may need right-click → *Open*. Release downloads and the Homebrew cask are notarized.
 
+## Contributors
+
+Thanks to everyone who helps make Manita better. See [CONTRIBUTING.md](CONTRIBUTING.md) to join in.
+
+<a href="https://github.com/gzimbron/manita/graphs/contributors"><img src="https://contrib.rocks/image?repo=gzimbron/manita" alt="Contributors"></a>
+
+## Star history
+
+If Manita made your demos a little more fun, a ⭐ helps others find it.
+
+<a href="https://star-history.com/#gzimbron/manita&Date"><img src="https://api.star-history.com/svg?repos=gzimbron/manita&type=Date" alt="Star history chart" width="600"></a>
+
 ## License
 
-[MIT](LICENSE) © 2026 Gustavo Zimbrón. Inspired by the idea behind apps like Pokey; all art, sound and code here are original.
+[MIT](LICENSE) © 2026 Gustavo Zimbrón. Source: <https://github.com/gzimbron/manita>. Inspired by the idea behind apps like Pokey; all art, sound and code here are original.

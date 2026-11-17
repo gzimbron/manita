@@ -1,0 +1,68 @@
+{
+  "id": "cat-paw",
+  "name": "Cat Paw",
+  "author": "Manita",
+  "svg": {
+    "idle": "paw-black.svg"
+  },
+  "hotspot": {
+    "x": 31.4,
+    "y": 7.8
+  },
+  "armAnchor": {
+    "x": 60.9,
+    "y": 80.1
+  },
+  "wand": {
+    "style": "sleeve",
+    "width": 34,
+    "fade": true,
+    "svg": {
+      "tile": "leg-black.svg"
+    }
+  },
+  "click": {
+    "svg": [
+      "paw-prints.svg",
+      "hearts.svg",
+      "scratch.svg"
+    ],
+    "size": 1.6,
+    "animation": {
+      "from": 0.5,
+      "to": 1.3,
+      "duration": 0.45,
+      "spin": true,
+      "rotation": 30,
+      "fade": true,
+      "scatter": 0.35
+    }
+  },
+  "colors": [
+    {
+      "name": "Black"
+    },
+    {
+      "name": "Tabby",
+      "svg": {
+        "idle": "paw-tabby.svg"
+      },
+      "wand": {
+        "svg": {
+          "tile": "leg-tabby.svg"
+        }
+      }
+    },
+    {
+      "name": "Gray",
+      "svg": {
+        "idle": "paw-gray.svg"
+      },
+      "wand": {
+        "svg": {
+          "tile": "leg-gray.svg"
+        }
+      }
+    }
+  ]
+}

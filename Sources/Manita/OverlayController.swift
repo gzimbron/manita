@@ -34,6 +34,8 @@ final class OverlayController {
     private var artwork: HandArtwork?
     private var style = Mood.style(Mood.default)
     private var click = ClickConfig()
+    /// The design's click art (`click.svg`), drawn once per `configure` at the largest size it plays.
+    private var burstArt: [String: CGImage] = [:]
     /// Effects played so far; picks the burst kind and tells a newer click from an older one.
     private var clickCount = 0
     private var isVisible = false
@@ -49,16 +51,15 @@ final class OverlayController {
         }
     }
 
-    /// - Parameter color: sleeve and effects color; `nil` uses the design's own.
-    func configure(skin: Skin, scale: Int, showArm: Bool, mood: MoodStyle, color: CGColor?) {
+    /// - Parameter skin: the design already resolved for the current appearance (`Skin.resolved(for:)`).
+    func configure(skin: Skin, scale: Int, showArm: Bool, mood: MoodStyle) {
         guard let art = HandArtwork.render(skin, scale: scale) ?? HandArtwork.render(.classic, scale: scale)
         else { return }
         artwork = art
         style = mood
         click = art.click
-        // The Color setting overrides the design's colors unless it is Design's Own.
-        let wandInk = color ?? art.wandColor
-        let effectInk = color ?? art.outline
+        let wandInk = art.wandColor
+        let effectInk = art.outline
         let maxStrength = CGFloat(ClickStreak.maxIntensity)
 
         let hand = max(art.size.width, art.size.height)
@@ -72,13 +73,27 @@ final class OverlayController {
         // Effects: sized for the largest burst this mood draws.
         let radius = hand * mood.burstRadius
         let lineWidth = max(1.5, hand * 0.035) * mood.burstWeight * CGFloat(click.weight)
+        // Click art: a square `click.size` hands wide (scaled like the classic burst by the mood),
+        // drawn at the strongest click's size; the effects square fits it turned and fully grown.
+        let artSide = Self.artSide(click: click, hand: hand, mood: mood, strength: maxStrength)
+        burstArt = [:]
+        for name in click.svg ?? [] where burstArt[name] == nil {
+            guard let data = skin.assetData[name],
+                  let image = Self.renderArt(data, side: artSide, scale: art.contentsScale,
+                                             tint: click.tint ? effectInk : nil)
+            else { continue }
+            burstArt[name] = image
+        }
+        let artReach = burstArt.isEmpty ? 0
+            : artSide * CGFloat(max(click.animation.from, click.animation.to)) * 1.42
         spec = PointerSpec(
             art: art, mood: mood, showArm: showArm, wandInk: wandInk, effectInk: effectInk,
             size: size, margin: margin,
             hotspot: CGPoint(x: margin + art.hotspot.x, y: size.height - margin - art.hotspot.y),
             direction: direction, armLength: armLength, armWidth: armWidth,
             effectsSide: max((radius * maxStrength * 1.25 + lineWidth) * 2,
-                             hand * Self.classicSideInHands * Self.moodBurstRatio(mood) * maxStrength * 1.2),
+                             hand * Self.classicSideInHands * Self.moodBurstRatio(mood) * maxStrength * 1.2,
+                             artReach),
             burstRadius: radius, burstLineWidth: lineWidth)
         rebuildSurfaces()
     }
@@ -251,9 +266,63 @@ final class OverlayController {
         }
     }
 
+    /// Side of the click art square, in points, for a click of `strength`.
+    private static func artSide(click: ClickConfig, hand: CGFloat, mood: MoodStyle, strength: CGFloat) -> CGFloat {
+        hand * CGFloat(click.size) * moodBurstRatio(mood) * strength
+    }
+
+    /// Draws click art SVG into a square image of `side` points, aspect ratio kept and centered.
+    /// With `tint` its shapes become a mask filled with that color.
+    private static func renderArt(_ data: Data, side: CGFloat, scale: CGFloat, tint: CGColor?) -> CGImage? {
+        guard let box = try? SVGDocument.parse(data).viewBox, box.width > 0, box.height > 0 else { return nil }
+        let fit = side / CGFloat(max(box.width, box.height))
+        let size = CGSize(width: CGFloat(box.width) * fit, height: CGFloat(box.height) * fit)
+        guard let image = HandArtwork.rasterize(data, size: size, backingScale: scale) else { return nil }
+        let pixels = Int((side * scale).rounded(.up))
+        guard let ctx = CGContext(data: nil, width: pixels, height: pixels, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        else { return nil }
+        ctx.scaleBy(x: scale, y: scale)
+        ctx.draw(image, in: CGRect(x: (side - size.width) / 2, y: (side - size.height) / 2,
+                                   width: size.width, height: size.height))
+        if let tint {
+            ctx.setBlendMode(.sourceIn)
+            ctx.setFillColor(tint)
+            ctx.fill(CGRect(x: 0, y: 0, width: side, height: side))
+        }
+        return ctx.makeImage()
+    }
+
+    /// Lays this click's art into one surface: sized for `strength`, turned when `spin` is on.
+    /// - Returns: `false` when the design has no art for this effect (the `bursts` presets play instead).
+    @discardableResult
+    private func shapeArt(on surface: PointerSurface, slot: Int, effect: Int, hand: CGFloat, strength: CGFloat) -> Bool {
+        let art = surface.artBursts[slot]
+        guard let name = click.art(forEffect: effect), let image = burstArt[name] else {
+            art.image.contents = nil
+            return false
+        }
+        let side = Self.artSide(click: click, hand: hand, mood: style, strength: strength)
+        var rng = SplitMix(seed: UInt64(truncatingIfNeeded: effect &* 2654435761 &+ 31))
+        surface.burstLayer.path = nil
+        surface.starLayer.path = nil
+        art.layer.bounds = CGRect(x: 0, y: 0, width: side, height: side)
+        art.image.frame = art.layer.bounds
+        art.image.contents = image
+        art.image.contentsGravity = .resizeAspect
+        let limit = CGFloat(click.animation.rotation) * .pi / 180
+        art.image.setAffineTransform(
+            click.animation.spin && limit > 0 ? CGAffineTransform(rotationAngle: rng.next(in: -limit...limit)) : .identity)
+        return true
+    }
+
     /// - Returns: seconds the burst (and its linger, if any) takes.
     @discardableResult
     private func playBurst(at point: NSPoint, hand: CGFloat, strength: CGFloat) -> TimeInterval {
+        if click.art(forEffect: clickCount) != nil, !burstArt.isEmpty {
+            return playArt(at: point, hand: hand, strength: strength)
+        }
         let kind = click.burst(forEffect: clickCount, comic: style.comicBursts)
         // Every display gets the burst at the click point; only the one holding it shows anything.
         withoutAnimation {
@@ -300,6 +369,38 @@ final class OverlayController {
         return burst.duration * 0.6 + linger.duration
     }
 
+    /// Plays the design's click art with its `click.animation`. - Returns: seconds it takes.
+    private func playArt(at point: NSPoint, hand: CGFloat, strength: CGFloat) -> TimeInterval {
+        let animation = click.animation
+        // Each click takes the next slot, so up to `artSlots` effects play at once, each to its end.
+        let slot = clickCount % PointerSurface.artSlots
+        // Scatter: a random point within `scatter` hand sizes of the click (uniform over the circle).
+        var rng = SplitMix(seed: UInt64(truncatingIfNeeded: clickCount &* 40503 &+ 7))
+        let reach = hand * CGFloat(animation.scatter) * sqrt(rng.next(in: 0...1))
+        let angle = rng.next(in: 0...(2 * .pi))
+        let landing = NSPoint(x: point.x + cos(angle) * reach, y: point.y + sin(angle) * reach)
+        withoutAnimation {
+            for surface in surfaces {
+                surface.placeEffects(at: landing, slot: slot)
+                shapeArt(on: surface, slot: slot, effect: clickCount, hand: hand, strength: strength)
+            }
+        }
+        let grow = CABasicAnimation(keyPath: "transform.scale")
+        grow.fromValue = animation.from
+        grow.toValue = animation.to
+        let fade = CABasicAnimation(keyPath: "opacity")
+        fade.fromValue = 1
+        fade.toValue = animation.fade ? 0 : 1
+        let burst = CAAnimationGroup()
+        burst.animations = [grow, fade]
+        burst.duration = animation.duration
+        burst.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        for surface in surfaces {
+            surface.artBursts[slot].layer.add(burst, forKey: "burst")
+        }
+        return animation.duration
+    }
+
     private func burstPath(kind: BurstKind, radius: CGFloat, seed: Int) -> CGPath {
         switch kind {
         case .classic: BurstShape.classicRays(unit: radius / 50, center: effectsCenter)
@@ -329,7 +430,7 @@ final class OverlayController {
             for surface in surfaces {
                 surface.pointer.body.removeAnimation(forKey: "jab")
                 surface.pointer.root.instanceCount = 1
-                for layer in [surface.burstLayer, surface.starLayer, surface.lingerLayer] {
+                for layer in [surface.burstLayer, surface.starLayer, surface.lingerLayer] + surface.artBursts.map(\.layer) {
                     layer.removeAllAnimations()
                     layer.opacity = 0
                 }
@@ -357,16 +458,30 @@ final class OverlayController {
         withoutAnimation {
             // The comic mood shows its second (star) effect; designs with their own list show the first.
             let effect = style.comicBursts ? 2 : 1
-            shapeBurst(on: preview, kind: click.burst(forEffect: effect, comic: style.comicBursts),
-                       hand: hand, strength: 1, seed: effect)
-            preview.burstLayer.opacity = 1
-            preview.starLayer.opacity = 1
+            if shapeArt(on: preview, slot: 0, effect: effect, hand: hand, strength: 1) {
+                preview.artBursts[0].layer.opacity = 1
+            } else {
+                shapeBurst(on: preview, kind: click.burst(forEffect: effect, comic: style.comicBursts),
+                           hand: hand, strength: 1, seed: effect)
+                preview.burstLayer.opacity = 1
+                preview.starLayer.opacity = 1
+            }
         }
         context.saveGState()
         context.translateBy(x: hotspot.x - spec.effectsSide / 2, y: hotspot.y - spec.effectsSide / 2)
         preview.burstLayer.render(in: context)
         preview.starLayer.render(in: context)
         context.restoreGState()
+        if preview.artBursts[0].layer.opacity > 0 {
+            // The art is drawn at its own size (scale 1) around the click point, like the classic burst.
+            let side = preview.artBursts[0].layer.bounds.width
+            context.saveGState()
+            context.translateBy(x: hotspot.x, y: hotspot.y)
+            context.concatenate(preview.artBursts[0].image.affineTransform())
+            context.translateBy(x: -side / 2, y: -side / 2)
+            preview.artBursts[0].image.render(in: context)
+            context.restoreGState()
+        }
         context.saveGState()
         context.translateBy(x: hotspot.x - spec.hotspot.x, y: hotspot.y - spec.hotspot.y)
         preview.pointer.body.render(in: context)
@@ -374,6 +489,7 @@ final class OverlayController {
         withoutAnimation {
             preview.burstLayer.opacity = 0
             preview.starLayer.opacity = 0
+            preview.artBursts[0].layer.opacity = 0
         }
     }
 

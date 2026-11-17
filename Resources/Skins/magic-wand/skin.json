@@ -1,0 +1,66 @@
+{
+  "id": "magic-wand",
+  "name": "Magic Wand",
+  "author": "Manita",
+  "svg": {
+    "idle": "idle.svg"
+  },
+  "hotspot": {
+    "x": 34,
+    "y": 7
+  },
+  "armAnchor": {
+    "x": 56,
+    "y": 62
+  },
+  "wand": {
+    "style": "sleeve",
+    "width": 22,
+    "fade": false,
+    "svg": {
+      "tile": "wand-black.svg",
+      "cuff": "wand-tip.svg"
+    }
+  },
+  "click": {
+    "svg": [
+      "sparkles.svg",
+      "stardust.svg",
+      "spiral.svg",
+      "rune-circle.svg"
+    ],
+    "size": 1.7,
+    "animation": {
+      "from": 0.5,
+      "to": 1.35,
+      "duration": 0.5,
+      "spin": true,
+      "rotation": 40,
+      "fade": true,
+      "scatter": 0.3
+    }
+  },
+  "colors": [
+    {
+      "name": "Classic"
+    },
+    {
+      "name": "Purple",
+      "wand": {
+        "svg": {
+          "tile": "wand-purple.svg",
+          "cuff": "wand-tip.svg"
+        }
+      }
+    },
+    {
+      "name": "Gold",
+      "wand": {
+        "svg": {
+          "tile": "wand-gold.svg",
+          "cuff": "wand-tip.svg"
+        }
+      }
+    }
+  ]
+}

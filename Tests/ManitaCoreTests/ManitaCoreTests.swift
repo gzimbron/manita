@@ -61,6 +61,23 @@ struct PreferencesTests {
         #expect(clamped.volume == 1)
         #expect(clamped.scale == Preferences.scaleRange.upperBound)
     }
+
+    @Test func sizeStartsAtTheDefault() {
+        #expect(Preferences.scaleRange == 5...12)
+        #expect(Preferences.default.scale == Preferences.scaleRange.lowerBound)
+        // A size saved before the range moved (1-4) comes back as the smallest, the default.
+        var prefs = Preferences.default
+        prefs.scale = 2
+        #expect(prefs.clamped().scale == 5)
+    }
+
+    @Test func sizeIsShownFromOne() {
+        #expect(Preferences.displaySizeRange == 1...8)
+        #expect(Preferences.scaleRange.map(Preferences.displaySize(forScale:)) == Array(1...8))
+        #expect(Preferences.displaySize(forScale: Preferences.default.scale) == 1)
+        #expect(Preferences.scale(forDisplaySize: 1) == 5 && Preferences.scale(forDisplaySize: 8) == 12)
+        #expect(Preferences.scale(forDisplaySize: 0) == nil && Preferences.scale(forDisplaySize: 9) == nil)
+    }
 }
 
 @Suite("Skins")
@@ -403,6 +420,6 @@ struct SVGSkinTests {
         var registry = SkinRegistry()
         let skin = try registry.register(manifestAt: repo.appending(path: "Resources/Skins/cartoon"))
         #expect(skin.id == "cartoon")
-        #expect(skin.svgData[.idle] != nil && skin.svgData[.pressed] != nil)
+        #expect(skin.svgData[.idle] != nil && skin.svgData[.pressed] == nil)
     }
 }

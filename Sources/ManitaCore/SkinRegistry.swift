@@ -53,6 +53,9 @@ public struct SkinRegistry: Sendable {
                 guard let name, !name.contains("/"), !name.hasPrefix(".") else { continue }
                 skin.svgData[kind] = try? Data(contentsOf: folder.appending(path: name))
             }
+            for name in skin.assetNames where !name.contains("/") && !name.contains("\\") && !name.hasPrefix(".") {
+                skin.assetData[name] = try? Data(contentsOf: folder.appending(path: name))
+            }
         }
         try register(skin)
         return skin
@@ -83,7 +86,7 @@ extension Skin {
     /// Descriptor of the bundled Cartoon design (the default). Its artwork is
     /// the SVG folder `Resources/Skins/cartoon`, loaded with `register(manifestAt:)`;
     /// this value carries no SVG data and is not validated on its own.
-    public static let cartoon = Skin(id: "cartoon", name: "Glove", author: "Manita",
+    public static let cartoon = Skin(id: "cartoon", name: "Cartoon", author: "Manita",
                                      svg: SVGFiles(idle: "idle.svg", pressed: "pressed.svg"))
 
     /// Original retro pointing hand, idle frame.

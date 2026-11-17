@@ -79,31 +79,42 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         }
         menu.addItem(mood)
 
-        // The design list is only worth showing when there is a choice.
-        let designs = skins()
-        if designs.count > 1 {
-            menu.addItem(.separator())
-            // An unknown saved design is shown as the one in use: the first.
-            let activeID = designs.contains { $0.id == prefs.skinID } ? prefs.skinID : designs[0].id
-            for skin in designs {
-                menu.addItem(toggle(skin.name, activeID == skin.id) { $0.skinID = skin.id })
-            }
-        }
-
+        // Design ▸: every design (a design with two or more color schemes opens a submenu of them;
+        // picking one selects the design and that scheme), then the designs folder actions.
+        // An unknown saved design shows as the first, an unknown saved scheme as the design's first.
         menu.addItem(.separator())
-        menu.addItem(submenu("Color", options: PointerColor.allCases.map { color in
-            (color.title, prefs.pointerColor == color, { $0.pointerColor = color })
-        }))
-        menu.addItem(submenu("Size", options: Preferences.scaleRange.map { s in
-            ("\(s)×", prefs.scale == s, { $0.scale = s })
-        }))
-        let designsMenu = NSMenuItem(title: "Designs", action: nil, keyEquivalent: "")
-        designsMenu.submenu = NSMenu()
-        designsMenu.submenu?.addItem(action("Open Designs Folder…") {
+        let designs = skins()
+        let designMenu = NSMenu()
+        let activeID = designs.contains { $0.id == prefs.skinID } ? prefs.skinID : designs.first?.id
+        for skin in designs {
+            let names = skin.schemeNames
+            guard names.count > 1 else {
+                designMenu.addItem(toggle(skin.name, activeID == skin.id) { $0.skinID = skin.id })
+                continue
+            }
+            let saved = prefs.colorSchemes[skin.id] ?? ""
+            let current = names.contains(saved) ? saved : names[0]
+            let item = submenu(skin.name, options: names.map { name in
+                let label = name == names[0] ? "\(name) (Default)" : name
+                return (label, activeID == skin.id && current == name, { prefs in
+                    prefs.skinID = skin.id
+                    prefs.colorSchemes[skin.id] = name
+                })
+            })
+            item.state = activeID == skin.id ? .on : .off
+            designMenu.addItem(item)
+        }
+        if !designs.isEmpty { designMenu.addItem(.separator()) }
+        designMenu.addItem(action("Open Designs Folder…") {
             NSWorkspace.shared.open(AppDelegate.skinsDirectory)
         })
-        designsMenu.submenu?.addItem(action("Reload Designs") { [actions] in actions.reloadSkins() })
-        menu.addItem(designsMenu)
+        designMenu.addItem(action("Reload Designs") { [actions] in actions.reloadSkins() })
+        let designItem = NSMenuItem(title: "Design", action: nil, keyEquivalent: "")
+        designItem.submenu = designMenu
+        menu.addItem(designItem)
+        menu.addItem(submenu("Size", options: Preferences.scaleRange.map { s in
+            ("\(Preferences.displaySize(forScale: s))×", prefs.scale == s, { $0.scale = s })
+        }))
 
         menu.addItem(.separator())
         menu.addItem(toggle("Animate on Click", prefs.clickAnimationEnabled) { $0.clickAnimationEnabled.toggle() })
@@ -139,11 +150,33 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
         menu.addItem(loginItem)
         menu.addItem(action("About Manita") {
             NSApp.activate()
-            NSApp.orderFrontStandardAboutPanel(nil)
+            NSApp.orderFrontStandardAboutPanel(options: [.credits: Self.aboutCredits()])
         })
         menu.addItem(action("Quit Manita", key: "q") { NSApp.terminate(nil) })
 
         statusItem.menu = menu
+    }
+
+    /// About panel credits: a link to the source repository.
+    private static func aboutCredits() -> NSAttributedString {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        let base: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize),
+            .foregroundColor: NSColor.labelColor,
+            .paragraphStyle: paragraph,
+        ]
+        let credits = NSMutableAttributedString()
+        let links = [
+            ("GitHub: gzimbron/manita", "https://github.com/gzimbron/manita"),
+        ]
+        for (index, (title, url)) in links.enumerated() {
+            if index > 0 { credits.append(NSAttributedString(string: "\n", attributes: base)) }
+            var attributes = base
+            attributes[.link] = URL(string: url)
+            credits.append(NSAttributedString(string: title, attributes: attributes))
+        }
+        return credits
     }
 
     // MARK: - NSMenuDelegate
@@ -209,17 +242,6 @@ final class StatusMenuController: NSObject, NSMenuDelegate {
             NSLog("Manita: launch at login failed: %@", String(describing: error))
         }
         rebuild()
-    }
-}
-
-extension PointerColor {
-    var title: String {
-        switch self {
-        case .automatic: "Automatic (Light/Dark)"
-        case .black: "Black"
-        case .white: "White"
-        case .design: "Design's Own"
-        }
     }
 }
 

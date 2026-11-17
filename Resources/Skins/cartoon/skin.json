@@ -1,10 +1,9 @@
 {
   "id": "cartoon",
-  "name": "Glove",
+  "name": "Cartoon",
   "author": "Manita",
   "svg": {
-    "idle": "idle.svg",
-    "pressed": "pressed.svg"
+    "idle": "idle.svg"
   },
   "hotspot": {
     "x": 35,
@@ -18,11 +17,20 @@
     "style": "sleeve",
     "color": "#111111",
     "width": 30,
-    "fade": true
+    "fade": true,
+    "svg": { "tile": "sleeve.svg" },
+    "tint": true
   },
   "click": {
     "bursts": ["classic"],
+    "svg": ["burst-lines.svg", "burst-stars.svg", "burst-kaboom.svg"],
+    "size": 1.6,
+    "animation": { "from": 0.6, "to": 2.15, "duration": 0.4, "spin": true, "fade": true, "scatter": 0.4, "rotation": 35 },
     "color": "#B8322A",
     "weight": 1
-  }
+  },
+  "colors": [
+    { "name": "Dark", "wand": { "color": "#111111" } },
+    { "name": "Light", "wand": { "color": "#F2F2F2D9" } }
+  ]
 }

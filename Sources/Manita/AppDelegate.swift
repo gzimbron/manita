@@ -60,7 +60,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // In presentation mode clicks never reach the monitors above; the disarmer reports them instead.
         disarmer.onButton = { [unowned self] isDown in handleButton(isDown: isDown) }
         hotkeys.onAction = { [unowned self] action in toggle(action) }
-        // The sleeve color follows Light/Dark Mode when the Color setting is Automatic.
+        // Designs draw their light or dark variant: redraw when macOS switches.
         appearanceObservation = NSApp.observe(\.effectiveAppearance) { [weak self] _, _ in
             MainActor.assumeIsolated { self?.apply() }
         }
@@ -120,11 +120,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Pushes the current preferences into every component.
     private func apply() {
         // A removed or unknown design (say "catpaw", saved earlier) falls back to the first one: the Glove.
-        let skin = registry.skinOrFirst(id: preferences.skinID)
         let isDark = NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        let design = registry.skinOrFirst(id: preferences.skinID)
+        let skin = design.resolved(for: isDark ? .dark : .light, scheme: preferences.colorSchemes[design.id])
         overlay.configure(skin: skin, scale: preferences.scale, showArm: preferences.showArm,
-                          mood: Mood.style(preferences.mood),
-                          color: preferences.pointerColor.resolved(systemIsDark: isDark)?.cgColor)
+                          mood: Mood.style(preferences.mood))
         overlay.setVisible(preferences.isEnabled)
         sound.volume = preferences.volume
         cursorHider.setHidden(preferences.isEnabled && preferences.hideSystemCursor)
