@@ -9,11 +9,11 @@ A design is either an **SVG design** (a folder with a `skin.json` manifest and S
 ~/Library/Application Support/Manita/Skins/<anything>.json                           (pixel design)
 ```
 
-Open it from the menu: **Designs → Open Designs Folder…**, then **Reload Designs**. Invalid designs are skipped and logged (`log stream --predicate 'process == "Manita"'`).
+Open it from the menu: **Design → Open Designs Folder…**, then **Reload Designs**. Invalid designs are skipped and logged (`log stream --predicate 'process == "Manita"'`).
 
 ## SVG designs
 
-The only bundled design is the **Glove**, shown in the menu as *Cartoon* (`cartoon`, `Resources/Skins/cartoon/`); the menu lists it first, then the designs in your designs folder. They are listed under **Design ▸**, even when there is a single design. A saved design that no longer exists falls back to the first design, the Glove.
+Two designs are bundled: the **Glove**, shown in the menu as *Cartoon* (`cartoon`, `Resources/Skins/cartoon/`), and **Magic Wand** (`magic-wand`, `Resources/Skins/magic-wand/`: the star is the pointer (`idle.svg`) and the wand is its sleeve (`wand-tip.svg` cuff + `wand-black.svg`/`wand-purple.svg`/`wand-gold.svg` tile, no fade), with the *Classic* (black wand, white tip; default), *Purple* and *Gold* schemes and four click effects). The menu lists them first, then the designs in your designs folder. They are listed under **Design ▸**, even when there is a single design. A saved design that no longer exists falls back to the first design, the Glove.
 
 ```
 Skins/cartoon-blue/

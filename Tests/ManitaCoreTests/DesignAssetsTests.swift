@@ -156,6 +156,19 @@ struct DesignAssetsTests {
         #expect(skin.assetData[art] != nil)
     }
 
+    @Test func bundledMagicWandShipsItsArt() throws {
+        let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        var registry = SkinRegistry()
+        let skin = try registry.register(manifestAt: repo.appending(path: "Resources/Skins/magic-wand"))
+        #expect(skin.name == "Magic Wand")
+        #expect(skin.schemeNames == ["Classic", "Purple", "Gold"])
+        #expect(skin.click.svg == ["sparkles.svg", "stardust.svg", "spiral.svg", "rune-circle.svg"])
+        #expect(skin.assetNames.allSatisfy { skin.assetData[$0] != nil })
+        #expect(skin.resolved(for: .light, scheme: "Gold").wand.svg?.tile == "wand-gold.svg")
+        #expect(skin.resolved(for: .dark, scheme: nil).wand.svg?.tile == "wand-black.svg")
+        #expect(skin.resolved(for: .light, scheme: "Purple").wand.svg?.tile == "wand-purple.svg")
+    }
+
     @Test func bundledGloveShipsItsSleeve() throws {
         let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         var registry = SkinRegistry()

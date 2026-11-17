@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 40">
+<!-- Magic Wand: the white tip next to the star, drawn once. -->
+<rect width="12" height="40" fill="#2B1745"/>
+<rect x="1.5" width="9" height="38.5" fill="#FFFFFF"/>
+<rect x="3.2" width="1.6" height="38.5" fill="#E6E0F5"/>
+</svg>

@@ -14,7 +14,7 @@ let package = Package(
         .executableTarget(name: "Manita", dependencies: ["ManitaCore", "ManitaSkins"]),
         // Bundled SVG designs (Resources/Skins/<id>/), exposed through Bundle.module.
         .target(name: "ManitaSkins", path: "Resources/Skins",
-                sources: ["BuiltInSkins.swift"], resources: [.copy("cartoon")]),
+                sources: ["BuiltInSkins.swift"], resources: [.copy("cartoon"), .copy("magic-wand")]),
         .testTarget(name: "ManitaCoreTests", dependencies: ["ManitaCore"]),
     ]
 )

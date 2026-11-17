@@ -14,7 +14,7 @@ Or download the signed and notarized `Manita-<version>.zip` from [GitHub Release
 
 ## Features
 
-- A hand that follows the pointer across every app, Space and full-screen window. The only bundled design is the **Glove** (SVG artwork); add your own SVG (or legacy pixel) designs in the designs folder. Each design draws its hand and, optionally, its own sleeve (`wand.svg`) and click effect (`click.svg`), configured in `skin.json` (see [docs/SKINS.md](docs/SKINS.md)).
+- A hand that follows the pointer across every app, Space and full-screen window. Two designs are bundled: **Cartoon** (a gloved hand) and **Magic Wand** (the star is the pointer and the wand trails behind it as the sleeve; magic click effects: sparkles, stardust, a spiral and a rune circle); add your own SVG (or legacy pixel) designs in the designs folder. Each design draws its hand and, optionally, its own sleeve (`wand.svg`) and click effect (`click.svg`), configured in `skin.json` (see [docs/SKINS.md](docs/SKINS.md)).
 - On every click the hand (and its sleeve) hops up and to the left, where the finger points, and springs back, and a short, natural click sound (synthesized in code) plays. The hand always keeps its idle artwork; it never swaps to a pressed frame.
 - **Rapid clicks** (presses less than 0.45 s apart) form a streak. From the click number set in **Effects From Click** (default 3, from 1 to 10) the classic burst plays where the click landed: 12 rays and a red star, with rotation, size and star position randomized on every click. From the third rapid click (or the chosen number, if higher) the hand also jabs and shakes sideways with a faded trailing copy, and each further click in the streak hits slightly harder (capped). The effects take well under half a second and leave nothing behind.
 - **Pointer Mood**: a four-stop slider from *Subtle* to *Look at me!* (default: the second stop). It never changes the hand itself, only the sleeve and how hard a click lands:
@@ -22,7 +22,7 @@ Or download the signed and notarized `Manita-<version>.zip` from [GitHub Release
   - the click hop goes further;
   - the burst gets bigger.
 - **Light and Dark Mode**: a design can ship a light and a dark variant (files and colors); Manita draws the one that matches macOS and switches when macOS does.
-- **Color schemes**: a design can offer several named looks (*Cartoon*, the bundled design, ships *Dark*, the default, and *Light*); pick one from **Design ▸ <design> ▸**, remembered per design.
+- **Color schemes**: a design can offer several named looks (*Cartoon* ships *Dark*, the default, and *Light*; *Magic Wand* ships *Classic* (black with a white tip, the default), *Purple* and *Gold*); pick one from **Design ▸ <design> ▸**, remembered per design.
 - **Global shortcuts**, changeable from the menu: `⌃⌥P` shows/hides the pointer, `⌃⌥T` turns presentation mode on/off.
 - **Presentation mode**: click anywhere to call out details without pressing anything (see [Presentation mode](#presentation-mode)).
 - Fully configurable from the menu bar (see [Menu](#menu)): size 1×–8× (default 1×, the smallest), sound and volume, click animation and when effects start, sleeve, hiding the system pointer, your own SVG designs, launch at login.

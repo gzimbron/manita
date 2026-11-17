@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100">
+<!-- Magic Wand click effect: 4-point sparkles. -->
+<path d="M0.00 -43.00Q2.86 -32.86 13.00 -30.00Q2.86 -27.14 0.00 -17.00Q-2.86 -27.14 -13.00 -30.00Q-2.86 -32.86 0.00 -43.00Z" fill="#FFD45C" stroke="#2B1745" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M26.00 -15.00Q27.98 -7.98 35.00 -6.00Q27.98 -4.02 26.00 3.00Q24.02 -4.02 17.00 -6.00Q24.02 -7.98 26.00 -15.00Z" fill="#FF7AD9" stroke="#2B1745" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M-24.00 -2.00Q-21.80 5.80 -14.00 8.00Q-21.80 10.20 -24.00 18.00Q-26.20 10.20 -34.00 8.00Q-26.20 5.80 -24.00 -2.00Z" fill="#B794FF" stroke="#2B1745" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M10.00 19.00Q11.54 24.46 17.00 26.00Q11.54 27.54 10.00 33.00Q8.46 27.54 3.00 26.00Q8.46 24.46 10.00 19.00Z" fill="#FFFFFF" stroke="#2B1745" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M-12.00 -19.00Q-10.90 -15.10 -7.00 -14.00Q-10.90 -12.90 -12.00 -9.00Q-13.10 -12.90 -17.00 -14.00Q-13.10 -15.10 -12.00 -19.00Z" fill="#FFFFFF" stroke="#2B1745" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M34.00 19.00Q35.10 22.90 39.00 24.00Q35.10 25.10 34.00 29.00Q32.90 25.10 29.00 24.00Q32.90 22.90 34.00 19.00Z" fill="#FFD45C" stroke="#2B1745" stroke-width="1.2" stroke-linejoin="round"/>
+<path d="M-34.00 -32.00Q-32.68 -27.32 -28.00 -26.00Q-32.68 -24.68 -34.00 -20.00Q-35.32 -24.68 -40.00 -26.00Q-35.32 -27.32 -34.00 -32.00Z" fill="#FF7AD9" stroke="#2B1745" stroke-width="1.2" stroke-linejoin="round"/>
+</svg>
