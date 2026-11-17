@@ -187,10 +187,12 @@ final class PointerSurface {
     /// The classic burst's filled, outlined star; drawn above the rays, empty for other kinds.
     let starLayer = CAShapeLayer()
     let lingerLayer = CAShapeLayer()
-    /// The design's own click art (`click.svg`): this layer plays the animation, `artBurstImage` holds the
-    /// picture turned to this click's angle.
-    let artBurstLayer = CALayer()
-    let artBurstImage = CALayer()
+    /// How many click art effects can play at once; rapid clicks take the slots in turn, so each one
+    /// plays to its end instead of cutting the previous one short.
+    static let artSlots = 5
+    /// The design's own click art (`click.svg`), one pair per slot: `layer` plays the animation,
+    /// `image` holds the picture turned to that click's angle.
+    let artBursts: [(layer: CALayer, image: CALayer)] = (0..<PointerSurface.artSlots).map { _ in (CALayer(), CALayer()) }
     private let panel: NSPanel?
     private let canvas: CALayer
     private(set) var spec: PointerSpec?
@@ -231,9 +233,11 @@ final class PointerSurface {
             layer.opacity = 0
             canvas.addSublayer(layer)
         }
-        artBurstLayer.opacity = 0
-        artBurstLayer.addSublayer(artBurstImage)
-        canvas.addSublayer(artBurstLayer)
+        for art in artBursts {
+            art.layer.opacity = 0
+            art.layer.addSublayer(art.image)
+            canvas.addSublayer(art.layer)
+        }
         // The hand is drawn above its own burst.
         canvas.addSublayer(pointer.root)
     }
@@ -273,13 +277,19 @@ final class PointerSurface {
     }
 
     /// Centers the burst layers on a global click point, in this display's coordinates.
-    func placeEffects(at point: CGPoint) {
+    /// - Parameter slot: also (only) moves that click art slot; the other slots keep playing where they are.
+    func placeEffects(at point: CGPoint, slot: Int? = nil) {
         guard let spec else { return }
         let side = spec.effectsSide
         let rect = CGRect(x: point.x - side / 2, y: point.y - side / 2, width: side, height: side)
-        effectsRect = rect
+        // Effects still playing elsewhere keep the window up: the rect grows to hold them all.
+        effectsRect = effectsRect.map { $0.union(rect) } ?? rect
         let local = CGPoint(x: point.x - frame.minX, y: point.y - frame.minY)
-        for layer in [burstLayer, starLayer, lingerLayer, artBurstLayer] { layer.position = local }
+        if let slot {
+            artBursts[slot].layer.position = local
+        } else {
+            for layer in [burstLayer, starLayer, lingerLayer] { layer.position = local }
+        }
         place(hotspot: hotspot)
     }
 

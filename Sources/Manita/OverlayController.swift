@@ -298,20 +298,21 @@ final class OverlayController {
     /// Lays this click's art into one surface: sized for `strength`, turned when `spin` is on.
     /// - Returns: `false` when the design has no art for this effect (the `bursts` presets play instead).
     @discardableResult
-    private func shapeArt(on surface: PointerSurface, effect: Int, hand: CGFloat, strength: CGFloat) -> Bool {
+    private func shapeArt(on surface: PointerSurface, slot: Int, effect: Int, hand: CGFloat, strength: CGFloat) -> Bool {
+        let art = surface.artBursts[slot]
         guard let name = click.art(forEffect: effect), let image = burstArt[name] else {
-            surface.artBurstImage.contents = nil
+            art.image.contents = nil
             return false
         }
         let side = Self.artSide(click: click, hand: hand, mood: style, strength: strength)
         var rng = SplitMix(seed: UInt64(truncatingIfNeeded: effect &* 2654435761 &+ 31))
         surface.burstLayer.path = nil
         surface.starLayer.path = nil
-        surface.artBurstLayer.bounds = CGRect(x: 0, y: 0, width: side, height: side)
-        surface.artBurstImage.frame = surface.artBurstLayer.bounds
-        surface.artBurstImage.contents = image
-        surface.artBurstImage.contentsGravity = .resizeAspect
-        surface.artBurstImage.setAffineTransform(
+        art.layer.bounds = CGRect(x: 0, y: 0, width: side, height: side)
+        art.image.frame = art.layer.bounds
+        art.image.contents = image
+        art.image.contentsGravity = .resizeAspect
+        art.image.setAffineTransform(
             click.animation.spin ? CGAffineTransform(rotationAngle: rng.next(in: 0...(2 * .pi))) : .identity)
         return true
     }
@@ -371,10 +372,12 @@ final class OverlayController {
     /// Plays the design's click art with its `click.animation`. - Returns: seconds it takes.
     private func playArt(at point: NSPoint, hand: CGFloat, strength: CGFloat) -> TimeInterval {
         let animation = click.animation
+        // Each click takes the next slot, so up to `artSlots` effects play at once, each to its end.
+        let slot = clickCount % PointerSurface.artSlots
         withoutAnimation {
             for surface in surfaces {
-                surface.placeEffects(at: point)
-                shapeArt(on: surface, effect: clickCount, hand: hand, strength: strength)
+                surface.placeEffects(at: point, slot: slot)
+                shapeArt(on: surface, slot: slot, effect: clickCount, hand: hand, strength: strength)
             }
         }
         let grow = CABasicAnimation(keyPath: "transform.scale")
@@ -388,8 +391,7 @@ final class OverlayController {
         burst.duration = animation.duration
         burst.timingFunction = CAMediaTimingFunction(name: .easeOut)
         for surface in surfaces {
-            surface.artBurstLayer.add(burst, forKey: "burst")
-            surface.lingerLayer.removeAnimation(forKey: "linger")
+            surface.artBursts[slot].layer.add(burst, forKey: "burst")
         }
         return animation.duration
     }
@@ -423,7 +425,7 @@ final class OverlayController {
             for surface in surfaces {
                 surface.pointer.body.removeAnimation(forKey: "jab")
                 surface.pointer.root.instanceCount = 1
-                for layer in [surface.burstLayer, surface.starLayer, surface.lingerLayer, surface.artBurstLayer] {
+                for layer in [surface.burstLayer, surface.starLayer, surface.lingerLayer] + surface.artBursts.map(\.layer) {
                     layer.removeAllAnimations()
                     layer.opacity = 0
                 }
@@ -451,8 +453,8 @@ final class OverlayController {
         withoutAnimation {
             // The comic mood shows its second (star) effect; designs with their own list show the first.
             let effect = style.comicBursts ? 2 : 1
-            if shapeArt(on: preview, effect: effect, hand: hand, strength: 1) {
-                preview.artBurstLayer.opacity = 1
+            if shapeArt(on: preview, slot: 0, effect: effect, hand: hand, strength: 1) {
+                preview.artBursts[0].layer.opacity = 1
             } else {
                 shapeBurst(on: preview, kind: click.burst(forEffect: effect, comic: style.comicBursts),
                            hand: hand, strength: 1, seed: effect)
@@ -465,14 +467,14 @@ final class OverlayController {
         preview.burstLayer.render(in: context)
         preview.starLayer.render(in: context)
         context.restoreGState()
-        if preview.artBurstLayer.opacity > 0 {
+        if preview.artBursts[0].layer.opacity > 0 {
             // The art is drawn at its own size (scale 1) around the click point, like the classic burst.
-            let side = preview.artBurstLayer.bounds.width
+            let side = preview.artBursts[0].layer.bounds.width
             context.saveGState()
             context.translateBy(x: hotspot.x, y: hotspot.y)
-            context.concatenate(preview.artBurstImage.affineTransform())
+            context.concatenate(preview.artBursts[0].image.affineTransform())
             context.translateBy(x: -side / 2, y: -side / 2)
-            preview.artBurstImage.render(in: context)
+            preview.artBursts[0].image.render(in: context)
             context.restoreGState()
         }
         context.saveGState()
@@ -482,7 +484,7 @@ final class OverlayController {
         withoutAnimation {
             preview.burstLayer.opacity = 0
             preview.starLayer.opacity = 0
-            preview.artBurstLayer.opacity = 0
+            preview.artBursts[0].layer.opacity = 0
         }
     }
 

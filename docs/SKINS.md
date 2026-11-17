@@ -123,7 +123,7 @@ The Glove's `sleeve.svg` is a plain 30 × 30 tile with `tint: true`, which looks
 }
 ```
 
-The art is drawn centered on the click point, behind the hand, in a square `size` hands wide (the longer side of its `viewBox` fills it). The app animates it; SVG animation (SMIL, CSS) is not played.
+Rapid clicks overlap: up to 5 effects play at once, each to its end (a sixth click reuses the oldest one's slot). The art is drawn centered on the click point, behind the hand, in a square `size` hands wide (the longer side of its `viewBox` fills it). The app animates it; SVG animation (SMIL, CSS) is not played.
 
 | `animation` field | Default | Meaning |
 | --- | --- | --- |
