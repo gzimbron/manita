@@ -13,7 +13,7 @@ Open it from the menu: **Designs → Open Designs Folder…**, then **Reload Des
 
 ## SVG designs
 
-The only bundled design is the **Glove** (`cartoon`, `Resources/Skins/cartoon/`); the menu lists it first, then the designs in your designs folder. While the Glove is the only design, the design list is hidden. A saved design that no longer exists falls back to the first design, the Glove.
+The only bundled design is the **Glove**, shown in the menu as *Cartoon* (`cartoon`, `Resources/Skins/cartoon/`); the menu lists it first, then the designs in your designs folder. They are listed under **Design ▸**, even when there is a single design. A saved design that no longer exists falls back to the first design, the Glove.
 
 ```
 Skins/cartoon-blue/
@@ -164,7 +164,7 @@ The Glove does not use these blocks: it follows [color schemes](#color-schemes) 
 
 ## Color schemes
 
-A design can offer several named looks, chosen by the user from the **Colors ▸** menu (shown only when the design has 2 or more). Add a `colors` list to `skin.json`. Each scheme has a required `name` (non-empty, unique in the design), optional overrides with the same shape as a [`light`/`dark` block](#light-and-dark) (`svg.idle`, `svg.pressed`, `wand`, `click`), and optional `light` and `dark` blocks of its own. The first scheme is the default; the choice is remembered per design, and a saved name that no longer exists falls back to the first.
+A design can offer several named looks, chosen by the user from **Design ▸ <design> ▸** (a design with 2 or more schemes opens a submenu of them; the first is marked *(Default)*). Add a `colors` list to `skin.json`. Each scheme has a required `name` (non-empty, unique in the design), optional overrides with the same shape as a [`light`/`dark` block](#light-and-dark) (`svg.idle`, `svg.pressed`, `wand`, `click`), and optional `light` and `dark` blocks of its own. The first scheme is the default; the choice is remembered per design, and a saved name that no longer exists falls back to the first.
 
 Resolution order: the design base, then the scheme's overrides, then the scheme's block for the system appearance (if the scheme has none for it, the design-level `light`/`dark` block, then nothing). Files and colors are validated like the base ones; empty or duplicate names, or any invalid file or value in a scheme, reject the design.
 

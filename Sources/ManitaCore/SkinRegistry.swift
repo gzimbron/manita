@@ -86,7 +86,7 @@ extension Skin {
     /// Descriptor of the bundled Cartoon design (the default). Its artwork is
     /// the SVG folder `Resources/Skins/cartoon`, loaded with `register(manifestAt:)`;
     /// this value carries no SVG data and is not validated on its own.
-    public static let cartoon = Skin(id: "cartoon", name: "Glove", author: "Manita",
+    public static let cartoon = Skin(id: "cartoon", name: "Cartoon", author: "Manita",
                                      svg: SVGFiles(idle: "idle.svg", pressed: "pressed.svg"))
 
     /// Original retro pointing hand, idle frame.

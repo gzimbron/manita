@@ -22,7 +22,7 @@ Or download the signed and notarized `Manita-<version>.zip` from [GitHub Release
   - the click hop goes further;
   - the burst gets bigger.
 - **Light and Dark Mode**: a design can ship a light and a dark variant (files and colors); Manita draws the one that matches macOS and switches when macOS does.
-- **Color schemes**: a design can offer several named looks (the Glove ships *Dark*, the default, and *Light*); pick one from **Colors ▸**, remembered per design.
+- **Color schemes**: a design can offer several named looks (*Cartoon*, the bundled design, ships *Dark*, the default, and *Light*); pick one from **Design ▸ <design> ▸**, remembered per design.
 - **Global shortcuts**, changeable from the menu: `⌃⌥P` shows/hides the pointer, `⌃⌥T` turns presentation mode on/off.
 - **Presentation mode**: click anywhere to call out details without pressing anything (see [Presentation mode](#presentation-mode)).
 - Fully configurable from the menu bar (see [Menu](#menu)): size 1×–8× (default 1×, the smallest), sound and volume, click animation and when effects start, sleeve, hiding the system pointer, your own SVG designs, launch at login.
@@ -104,8 +104,7 @@ From top to bottom:
 | **Pointer Mood** slider | *Subtle* … *Look at me!*, four stops. |
 | Design list | The Glove and your own designs. Hidden while the Glove is the only design. |
 | **Size ▸** | 1× to 8× (default 1×, the smallest; 1× is the old 5×, about 65 pt, and each step adds 13 pt). Sizes saved by older versions keep their look: the old 5×–8× show as 1×–4×; anything smaller opens as 1×. |
-| **Colors ▸** | The active design's color schemes, with a check on the current one. Shown only when the design has 2 or more (the Glove has *Dark* and *Light*). |
-| **Designs ▸** | *Open Designs Folder…*, *Reload Designs*. |
+| **Design ▸** | Every design, the active one checked. A design with 2 or more color schemes opens a submenu of them (*Cartoon ▸ Dark (Default) / Light*); picking one selects the design and the scheme. Then *Open Designs Folder…* and *Reload Designs*. |
 | **Animate on Click** | Click hop, burst and jab on/off. |
 | **Effects From Click ▸** | From which click of a rapid streak the burst plays: *Every Click*, or *Click 2 of a Streak* … *Click 10 of a Streak* (default *Click 3 of a Streak*). The jab and shake start from the third click or this number, whichever is higher. |
 | **Click Sound**, **Volume ▸** | Sound on/off; 25%, 50%, 75%, 100%. |
@@ -140,7 +139,7 @@ Designs ("skins") are folders with a `skin.json` and SVG files (`idle.svg`, opti
 ~/Library/Application Support/Manita/Skins/
 ```
 
-then choose **Designs → Reload Designs** in the menu. Format and examples: [docs/SKINS.md](docs/SKINS.md). Preview a design without launching the app:
+then choose **Design → Reload Designs** in the menu. Format and examples: [docs/SKINS.md](docs/SKINS.md). Preview a design without launching the app:
 
 ```sh
 swift build && .build/debug/Manita --render-preview preview.png path/to/design-folder 2
