@@ -48,13 +48,36 @@ swift test                    # run unit tests (ManitaCore)
 scripts/build-app.sh debug    # debug .app bundle
 ```
 
-Or use the `Makefile` shortcuts (`make` lists them all):
+### Make shortcuts
+
+The `Makefile` wraps the commands above. Run `make` (or `make help`) to list them. Day to day, `make open` is all you need.
+
+| Command | What it does |
+| --- | --- |
+| `make help` | Lists the commands (the default target). |
+| `make build` | Compiles a debug build (`swift build`). |
+| `make test` | Runs the unit tests (`swift test`). |
+| `make app` | Builds the debug app bundle, `build/Manita.app` (`scripts/build-app.sh debug`). |
+| `make open` | Quits a running Manita, rebuilds the debug app and opens it. |
+| `make quit` | Quits a running Manita, if any. |
+| `make release` | Builds the release app bundle (`scripts/build-app.sh`). |
+| `make preview` | Renders a design's artwork to `/tmp/manita-preview.png` and opens it. |
+| `make pointer` | Renders the whole pointer (sleeve, hand, click burst) and opens it. |
+| `make clean` | Removes the build outputs (`.build`, `build`). |
+
+`preview` and `pointer` take variables:
+
+| Variable | Default | Used by | Meaning |
+| --- | --- | --- | --- |
+| `DESIGN` | `cartoon` | `preview`, `pointer` | Bundled design id, design folder or `.json` file. |
+| `SCALE` | `5` | `pointer` | Size setting, 1–8. |
+| `MOOD` | `1` | `pointer` | Pointer Mood, 0–3. |
+| `APPEARANCE` | `light` | `pointer` | `light` or `dark`. |
+| `OUT` | `/tmp/manita-pointer.png` | `pointer` | Output PNG. |
 
 ```sh
-make open                     # quit Manita, rebuild the debug app and open it
-make build | make test | make release | make clean
-make pointer DESIGN=cartoon MOOD=3 APPEARANCE=dark   # render the pointer and open the PNG
-make preview DESIGN=path/to/design-folder            # render a design's artwork
+make pointer DESIGN=cartoon MOOD=3 APPEARANCE=dark
+make preview DESIGN=path/to/my-design   # a path without spaces
 ```
 
 The icon appears in the menu bar (there is no Dock icon). Quit from the menu.

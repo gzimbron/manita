@@ -6,9 +6,11 @@ Thanks for your interest! Manita is small on purpose; keep changes focused.
 
 ```sh
 git clone https://github.com/gzimbron/manita.git && cd manita
-swift test
-scripts/build-app.sh debug && open build/Manita.app
+make test   # or: swift test
+make open   # or: scripts/build-app.sh debug && open build/Manita.app
 ```
+
+Run `make` to list every shortcut; see [Make shortcuts](README.md#make-shortcuts).
 
 ## Conventions
 
