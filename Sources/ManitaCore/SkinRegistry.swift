@@ -53,6 +53,9 @@ public struct SkinRegistry: Sendable {
                 guard let name, !name.contains("/"), !name.hasPrefix(".") else { continue }
                 skin.svgData[kind] = try? Data(contentsOf: folder.appending(path: name))
             }
+            for name in skin.assetNames where !name.contains("/") && !name.contains("\\") && !name.hasPrefix(".") {
+                skin.assetData[name] = try? Data(contentsOf: folder.appending(path: name))
+            }
         }
         try register(skin)
         return skin

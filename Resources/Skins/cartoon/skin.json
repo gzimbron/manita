@@ -17,7 +17,9 @@
     "style": "sleeve",
     "color": "#111111",
     "width": 30,
-    "fade": true
+    "fade": true,
+    "svg": { "tile": "sleeve.svg" },
+    "tint": true
   },
   "click": {
     "bursts": ["classic"],

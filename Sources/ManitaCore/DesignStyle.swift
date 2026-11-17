@@ -8,6 +8,22 @@ public enum WandStyle: String, Codable, CaseIterable, Sendable {
     case stick
 }
 
+/// A sleeve drawn by the design: `wand.svg` in `skin.json`. File names are relative to the design folder.
+public struct WandArt: Codable, Equatable, Sendable {
+    /// Repeated along the sleeve, away from the hand; its viewBox width spans the sleeve's width.
+    public var tile: String
+    /// Drawn once at the hand end, before the first tile. Optional.
+    public var cuff: String?
+
+    public init(tile: String, cuff: String? = nil) {
+        self.tile = tile
+        self.cuff = cuff
+    }
+
+    /// The files this art needs, cuff first.
+    public var files: [String] { [cuff, tile].compactMap { $0 } }
+}
+
 /// The wand a design draws behind its hand: `wand` in `skin.json`.
 /// Missing fields take the defaults that reproduce the original sleeve.
 public struct WandConfig: Codable, Equatable, Sendable {
@@ -18,17 +34,24 @@ public struct WandConfig: Codable, Equatable, Sendable {
     public var style: WandStyle
     /// Whether the wand fades out along its length. `nil`: sleeves fade, sticks do not.
     public var fade: Bool?
+    /// The design's own sleeve artwork; replaces `style` when set.
+    public var svg: WandArt?
+    /// Draw `svg` in the wand color (its shapes become a mask), so the Color setting applies to it.
+    public var tint: Bool
 
-    public init(color: String? = nil, width: Double? = nil, style: WandStyle = .sleeve, fade: Bool? = nil) {
+    public init(color: String? = nil, width: Double? = nil, style: WandStyle = .sleeve, fade: Bool? = nil,
+                svg: WandArt? = nil, tint: Bool = false) {
         self.color = color
         self.width = width
         self.style = style
         self.fade = fade
+        self.svg = svg
+        self.tint = tint
     }
 
     public var fades: Bool { fade ?? (style == .sleeve) }
 
-    private enum CodingKeys: String, CodingKey { case color, width, style, fade }
+    private enum CodingKeys: String, CodingKey { case color, width, style, fade, svg, tint }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -36,6 +59,18 @@ public struct WandConfig: Codable, Equatable, Sendable {
         width = try c.decodeIfPresent(Double.self, forKey: .width)
         style = try c.decodeIfPresent(WandStyle.self, forKey: .style) ?? .sleeve
         fade = try c.decodeIfPresent(Bool.self, forKey: .fade)
+        svg = try c.decodeIfPresent(WandArt.self, forKey: .svg)
+        tint = try c.decodeIfPresent(Bool.self, forKey: .tint) ?? false
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encodeIfPresent(color, forKey: .color)
+        try c.encodeIfPresent(width, forKey: .width)
+        try c.encode(style, forKey: .style)
+        try c.encodeIfPresent(fade, forKey: .fade)
+        try c.encodeIfPresent(svg, forKey: .svg)
+        if tint { try c.encode(tint, forKey: .tint) }
     }
 }
 

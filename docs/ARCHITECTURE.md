@@ -18,7 +18,7 @@ Sources/
 │   └── CursorOverride.swift   cursor names, transparent image spec, fallback policy
 Resources/Skins/           bundled SVG designs (target ManitaSkins, Bundle.module)
 │   ├── BuiltInSkins.swift     where the bundled design folders are
-│   └── cartoon/               skin.json, idle.svg (the Glove, the only bundled design)
+│   └── cartoon/               skin.json, idle.svg (hand), sleeve.svg (sleeve tile): the Glove, the only bundled design
 └── Manita/                AppKit shell — thin, manually tested
     ├── main.swift             app entry (accessory / menu bar only), preview flags
     ├── AppDelegate.swift      composition root: owns state, applies preferences

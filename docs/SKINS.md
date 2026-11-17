@@ -18,9 +18,13 @@ The only bundled design is the **Glove** (`cartoon`, `Resources/Skins/cartoon/`)
 ```
 Skins/cartoon-blue/
 ├── skin.json
-├── idle.svg
+├── idle.svg         the hand (pointer)
+├── sleeve.svg       the sleeve tile (optional, see Wand)
+├── cuff.svg         the sleeve's cuff piece (optional, see Wand)
 └── pressed.svg      (optional)
 ```
+
+A design has three parts you can draw: the **hand** (`svg.idle`), the **sleeve** (`wand.svg`) and the **click effect** (`click`). The bundled Glove draws its hand and sleeve as SVG.
 
 > The app never shows the pressed artwork: the hand keeps its idle frame and a click is shown by the hop, burst and jab. `pressed.svg` is optional and currently not displayed (it is kept for compatibility, and `--render-preview` still draws it).
 
@@ -55,7 +59,7 @@ The **Color** setting overrides every color of the wand and the effects, except 
 
 Rules (checked by `Skin.validate()`; the root `<svg>` is read for its `viewBox`, or `width`/`height` when there is none):
 
-- File names cannot contain a path (`/`, `..`); a missing file, a file that is not an SVG, or a `pressed` with a different `viewBox` rejects the design.
+- File names cannot contain a path (`/`, `..`); a missing file, a file that is not an SVG, or a `pressed` with a different `viewBox` rejects the design. The same goes for the sleeve files named by `wand.svg`.
 - The longer side of the `viewBox` is drawn at `Size × 13` points (Size 1–8; the default Size 5 ≈ 65 pt), aspect ratio preserved, at Retina resolution.
 - The wand (the menu calls it the sleeve) is drawn by the app (a bar from `armAnchor`, opaque then fading out, unless `wand` says otherwise), leaning 20° down-right: tilt the glove about 20° to the left so the cuff lines up with it. Its length, opacity and how soon it fades come from the **Pointer Mood**, not from the design.
 - Preview the whole pointer with a mood and appearance: `.build/debug/Manita --render-pointer out.png path/to/design-folder 5 3 dark` (a bundled id such as `cartoon` works too).
@@ -74,6 +78,23 @@ Rules (checked by `Skin.validate()`; the root `<svg>` is read for its `viewBox`,
 | `width` | `armWidth`, else 30% of the `viewBox` width | Thickness in user units; must be above 0. |
 | `style` | `sleeve` | `sleeve`: a solid bar as wide as the cuff (today's look). `stick`: a metal telescopic pointer: three tube segments, each thinner than the last away from the hand, joined by collars. |
 | `fade` | `true` for `sleeve`, `false` for `stick` | Whether the wand fades out along its length. A sleeve that does not fade keeps the mood's opacity along its whole length; a stick is fully opaque. |
+| `svg` | none | The design's own sleeve: `{ "tile": "sleeve.svg", "cuff": "cuff.svg" }` (`cuff` optional). Replaces `style`. See below. |
+| `tint` | `false` | With `svg`: draw the sleeve art in the wand color (its shapes are used as a mask), so `color` and the **Color** setting apply to it. Without it the art keeps its own colors. |
+
+#### Drawing your own sleeve
+
+```json
+"wand": { "width": 30, "svg": { "tile": "sleeve.svg", "cuff": "cuff.svg" }, "tint": false }
+```
+
+The sleeve is drawn as a strip that starts at `armAnchor` and runs away from the hand, as long as the **Pointer Mood** asks:
+
+- `cuff` (optional) is drawn once, at the hand end (a quarter of the width is tucked under the hand).
+- `tile` is repeated after it until the sleeve ends; it is never stretched.
+- Draw both upright: top = toward the hand, bottom = away from it. Each file's `viewBox` width spans the sleeve's `width`; its height keeps the aspect ratio (a `0 0 30 20` tile on a 30-unit sleeve repeats every 20 units).
+- The mood still sets the length, width, opacity and fade (`fade`).
+
+The Glove's `sleeve.svg` is a plain 30 × 30 tile with `tint: true`, which looks exactly like the `sleeve` preset.
 
 ### Click effects
 

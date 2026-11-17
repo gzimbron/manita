@@ -35,6 +35,9 @@ final class PointerLayers {
     /// The `stick` wand: filled segments and collars, optionally faded by `stickFade`.
     private let stickLayer = CAShapeLayer()
     private let stickFade = CAGradientLayer()
+    /// The design's own sleeve (`wand.svg`): one strip image laid along the sleeve, faded by `artFade`.
+    private let artLayer = CALayer()
+    private let artFade = CAGradientLayer()
     let hand = CALayer()
 
     init() {
@@ -46,6 +49,8 @@ final class PointerLayers {
         stickFade.colors = [NSColor.black.cgColor, NSColor.black.cgColor, NSColor.clear.cgColor]
         body.addSublayer(armLayer)
         body.addSublayer(stickLayer)
+        artLayer.mask = artFade
+        body.addSublayer(artLayer)
         body.addSublayer(hand)
         root.addSublayer(body)
         root.instanceDelay = PointerSurface.trailDelay
@@ -94,7 +99,28 @@ final class PointerLayers {
         armLayer.locations = fadeLocations
         armLayer.startPoint = fadeStart
         armLayer.endPoint = fadeEnd
-        armLayer.isHidden = !spec.showArm || isStick
+        let strip = spec.showArm
+            ? art.sleeveStrip(width: armWidth, length: armLength, ink: wandInk) : nil
+        let hasArt = art.sleeveTile != nil
+        armLayer.isHidden = !spec.showArm || isStick || hasArt
+
+        // Design's sleeve: the strip hangs from `start` (top-center anchor), turned to the sleeve direction.
+        artLayer.setAffineTransform(.identity)
+        artLayer.anchorPoint = CGPoint(x: 0.5, y: 1)
+        artLayer.bounds = CGRect(x: 0, y: 0, width: armWidth, height: armLength)
+        artLayer.position = start
+        artLayer.setAffineTransform(CGAffineTransform(rotationAngle: atan2(direction.dx, -direction.dy)))
+        artLayer.contents = strip
+        artLayer.contentsScale = art.contentsScale
+        artLayer.opacity = Float(mood.armOpacity)
+        artFade.frame = artLayer.bounds
+        artFade.startPoint = CGPoint(x: 0.5, y: 1)
+        artFade.endPoint = CGPoint(x: 0.5, y: 0)
+        artFade.locations = fadeLocations
+        artFade.colors = fades
+            ? [NSColor.black.cgColor, NSColor.black.cgColor, NSColor.clear.cgColor]
+            : [NSColor.black.cgColor, NSColor.black.cgColor]
+        artLayer.isHidden = !spec.showArm || !hasArt
 
         // Stick: telescopic segments, thinner away from the hand, joined by collars.
         stickLayer.frame = bounds
@@ -108,7 +134,7 @@ final class PointerLayers {
             ? [NSColor.black.cgColor, NSColor.black.cgColor, NSColor.clear.cgColor]
             : [NSColor.black.cgColor, NSColor.black.cgColor]
         stickLayer.mask = fades ? stickFade : nil
-        stickLayer.isHidden = !spec.showArm || !isStick
+        stickLayer.isHidden = !spec.showArm || !isStick || hasArt
     }
 
     /// The telescopic pointer: three tube segments, each thinner than the last, with a collar at each joint.

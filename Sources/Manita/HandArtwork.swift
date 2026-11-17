@@ -28,6 +28,9 @@ struct HandArtwork {
     var contentsScale: CGFloat
     /// Nearest-neighbor magnification for pixel art.
     var isPixelArt: Bool
+    /// The design's own sleeve tile and cuff (`wand.svg`), as SVG data; `nil` draws the `wand.style` preset.
+    var sleeveTile: Data? = nil
+    var sleeveCuff: Data? = nil
 
     /// Points drawn for the longer side of an SVG viewBox, per step of the Size setting.
     static let svgPointsPerScale: CGFloat = 13
@@ -77,12 +80,52 @@ struct HandArtwork {
             hotspot: point(hotspot), armAnchor: point(anchor),
             armWidth: CGFloat(skin.resolvedArmWidth ?? box.width * 0.3) * unit,
             unit: CGFloat(scale) * 0.5, outline: clickColor.cgColor, wandColor: wandColor.cgColor,
-            wand: skin.wand, click: skin.click, contentsScale: backingScale, isPixelArt: false
+            wand: skin.wand, click: skin.click, contentsScale: backingScale, isPixelArt: false,
+            sleeveTile: skin.wand.svg.flatMap { skin.assetData[$0.tile] },
+            sleeveCuff: skin.wand.svg?.cuff.flatMap { skin.assetData[$0] }
         )
     }
 
+    /// The design's sleeve drawn as one strip `width` x `length` points, hand end at the top: the cuff
+    /// once, then the tile repeated (each piece keeps its own aspect ratio, it is never stretched).
+    /// With `tint` the pieces become a mask filled with `ink`. `nil` when the design has no sleeve art.
+    func sleeveStrip(width: CGFloat, length: CGFloat, ink: CGColor) -> CGImage? {
+        guard let tileData = sleeveTile, width > 0, length > 0 else { return nil }
+        // Everything is laid out in whole device pixels so neighboring tiles never leave a seam.
+        let pixel = contentsScale
+        let w = Int((width * pixel).rounded(.up)), h = Int((length * pixel).rounded(.up))
+        func piece(_ data: Data) -> (CGImage, Int)? {
+            guard let box = try? SVGDocument.parse(data).viewBox, box.width > 0, box.height > 0 else { return nil }
+            let rows = max(1, Int((CGFloat(w) * CGFloat(box.height / box.width)).rounded()))
+            let size = CGSize(width: CGFloat(w) / pixel, height: CGFloat(rows) / pixel)
+            return Self.rasterize(data, size: size, backingScale: pixel).map { ($0, rows) }
+        }
+        guard let (tile, tileRows) = piece(tileData) else { return nil }
+        guard let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        else { return nil }
+        ctx.interpolationQuality = .none
+        // Bottom-left origin: the hand end is at the top row, pieces go down from there.
+        var top = h
+        if let cuffData = sleeveCuff, let (cuff, cuffRows) = piece(cuffData) {
+            ctx.draw(cuff, in: CGRect(x: 0, y: top - cuffRows, width: w, height: cuffRows))
+            top -= cuffRows
+        }
+        while top > 0 {
+            ctx.draw(tile, in: CGRect(x: 0, y: top - tileRows, width: w, height: tileRows))
+            top -= tileRows
+        }
+        if wand.tint {
+            ctx.setBlendMode(.sourceIn)
+            ctx.setFillColor(ink)
+            ctx.fill(CGRect(x: 0, y: 0, width: w, height: h))
+        }
+        return ctx.makeImage()
+    }
+
     /// Draws SVG data (via `NSImage`, which renders SVG natively) into a bitmap of `size` points.
-    private static func rasterize(_ data: Data, size: CGSize, backingScale: CGFloat) -> CGImage? {
+    static func rasterize(_ data: Data, size: CGSize, backingScale: CGFloat) -> CGImage? {
         guard let image = NSImage(data: data) else { return nil }
         let width = Int((size.width * backingScale).rounded(.up))
         let height = Int((size.height * backingScale).rounded(.up))
