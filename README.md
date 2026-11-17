@@ -1,5 +1,23 @@
 # Manita 👆
 
+<p align="center">
+  <a href="https://gzimbron.github.io/manita/"><img src="web/public/og.png" alt="Manita: a cartoon gloved hand pointer for macOS" width="720"></a>
+</p>
+
+<p align="center">
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/github/v/release/gzimbron/manita" alt="Latest release"></a>
+  <a href="https://github.com/gzimbron/manita/releases"><img src="https://img.shields.io/github/downloads/gzimbron/manita/total" alt="Downloads"></a>
+  <a href="https://github.com/gzimbron/manita/stargazers"><img src="https://img.shields.io/github/stars/gzimbron/manita?style=flat" alt="Stars"></a>
+  <img src="https://img.shields.io/badge/macOS-26%2B-black?logo=apple" alt="macOS 26+">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/gzimbron/manita" alt="MIT license"></a>
+</p>
+
+<p align="center">
+  <a href="https://gzimbron.github.io/manita/"><b>Website</b></a> ·
+  <a href="https://gzimbron.github.io/manita/es/">Español</a> ·
+  <a href="docs/SKINS.md">Make a design</a>
+</p>
+
 A tiny macOS menu bar utility that turns your pointer into an **old-cartoon gloved hand** with a long trailing sleeve (or a telescopic pointer, if a design asks for it), a hop on every click, a burst and a jab on rapid clicks, and a natural click sound. Every effect can be switched off.
 
 Current version: **1.0.0**, the first public release. Website: <https://gzimbron.github.io/manita/> (Spanish: <https://gzimbron.github.io/manita/es/>).
@@ -171,6 +189,18 @@ To see the whole pointer as it looks on screen (sleeve, hand and the classic cli
 - Hiding the system pointer relies on private macOS APIs: system cursors are replaced by a transparent image while Manita runs (see [ADR 0005](docs/adr/0005-replace-system-cursors.md)). If that fails Manita falls back to hiding the pointer, and then to showing it under the hand.
 - Manita restores the cursors when you quit, disable it, or when it receives SIGTERM/SIGINT. If it crashes or is force-killed (SIGKILL), the pointer may stay invisible: relaunch Manita and quit it (or turn off *Hide System Pointer*), or log out and back in.
 - Builds you compile yourself are not notarized: on first launch you may need right-click → *Open*. Release downloads and the Homebrew cask are notarized.
+
+## Contributors
+
+Thanks to everyone who helps make Manita better. See [CONTRIBUTING.md](CONTRIBUTING.md) to join in.
+
+<a href="https://github.com/gzimbron/manita/graphs/contributors"><img src="https://contrib.rocks/image?repo=gzimbron/manita" alt="Contributors"></a>
+
+## Star history
+
+If Manita made your demos a little more fun, a ⭐ helps others find it.
+
+<a href="https://star-history.com/#gzimbron/manita&Date"><img src="https://api.star-history.com/svg?repos=gzimbron/manita&type=Date" alt="Star history chart" width="600"></a>
 
 ## License
 
