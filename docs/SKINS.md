@@ -13,7 +13,7 @@ Open it from the menu: **Design → Open Designs Folder…**, then **Reload Desi
 
 ## SVG designs
 
-Two designs are bundled: the **Glove**, shown in the menu as *Cartoon* (`cartoon`, `Resources/Skins/cartoon/`), and **Magic Wand** (`magic-wand`, `Resources/Skins/magic-wand/`: the star is the pointer (`idle.svg`) and the wand is its sleeve (`wand-tip.svg` cuff + `wand-black.svg`/`wand-purple.svg`/`wand-gold.svg` tile, no fade), with the *Classic* (black wand, white tip; default), *Purple* and *Gold* schemes and four click effects). The menu lists them first, then the designs in your designs folder. They are listed under **Design ▸**, even when there is a single design. A saved design that no longer exists falls back to the first design, the Glove.
+Three designs are bundled: the **Glove**, shown in the menu as *Cartoon* (`cartoon`, `Resources/Skins/cartoon/`); **Cat Paw** (`cat-paw`: the claw tip is the click point, the leg is the sleeve; the *Black* (default), *Tabby* and *Gray* schemes swap both the paw and the leg files; effects: paw prints, hearts, scratches); and **Magic Wand** (`magic-wand`, `Resources/Skins/magic-wand/`: the star is the pointer (`idle.svg`) and the wand is its sleeve (`wand-tip.svg` cuff + `wand-black.svg`/`wand-purple.svg`/`wand-gold.svg` tile, no fade), with the *Classic* (black wand, white tip; default), *Purple* and *Gold* schemes and four click effects). The menu lists them first, then the designs in your designs folder. They are listed under **Design ▸**, even when there is a single design. A saved design that no longer exists falls back to the first design, the Glove.
 
 ```
 Skins/cartoon-blue/

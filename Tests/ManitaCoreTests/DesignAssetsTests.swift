@@ -169,6 +169,20 @@ struct DesignAssetsTests {
         #expect(skin.resolved(for: .light, scheme: "Purple").wand.svg?.tile == "wand-purple.svg")
     }
 
+    @Test func bundledCatPawShipsItsArt() throws {
+        let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        var registry = SkinRegistry()
+        let skin = try registry.register(manifestAt: repo.appending(path: "Resources/Skins/cat-paw"))
+        #expect(skin.name == "Cat Paw")
+        #expect(skin.schemeNames == ["Black", "Tabby", "Gray"])
+        #expect(skin.click.svg == ["paw-prints.svg", "hearts.svg", "scratch.svg"])
+        #expect(skin.assetNames.allSatisfy { skin.assetData[$0] != nil })
+        let tabby = skin.resolved(for: .dark, scheme: "Tabby")
+        #expect(tabby.svg?.idle == "paw-tabby.svg" && tabby.wand.svg?.tile == "leg-tabby.svg")
+        let byDefault = skin.resolved(for: .light, scheme: nil)
+        #expect(byDefault.svg?.idle == "paw-black.svg" && byDefault.wand.svg?.tile == "leg-black.svg")
+    }
+
     @Test func bundledGloveShipsItsSleeve() throws {
         let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         var registry = SkinRegistry()

@@ -19,6 +19,7 @@ Sources/
 Resources/Skins/           bundled SVG designs (target ManitaSkins, Bundle.module)
 │   ├── BuiltInSkins.swift     where the bundled design folders are
 │   ├── cartoon/               skin.json, idle.svg (hand), sleeve.svg (sleeve tile), burst-lines/stars/kaboom.svg (click effects, cycled): the Glove (Cartoon)
+│   ├── cat-paw/               skin.json, paw-tabby|black|gray.svg, leg-tabby|black|gray.svg, paw-prints/hearts/scratch.svg
 │   └── magic-wand/            skin.json, idle.svg (star), wand-tip.svg + wand-black|purple|gold.svg (the wand, as sleeve), sparkles/stardust/spiral/rune-circle.svg
 └── Manita/                AppKit shell — thin, manually tested
     ├── main.swift             app entry (accessory / menu bar only), preview flags

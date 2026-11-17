@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 30">
+<!-- Cat Paw: one length of furry leg, repeated away from the paw. -->
+<rect width="34" height="30" fill="#0D0D10"/>
+<rect x="2.5" width="29" height="30" fill="#2A2A30"/>
+<path d="M2.5 6 Q10 9 14 6 M20 21 Q26 24 31.5 20 M2.5 22 Q7 24 10 21" fill="none" stroke="#3C3C44" stroke-width="3" stroke-linecap="round"/>
+</svg>

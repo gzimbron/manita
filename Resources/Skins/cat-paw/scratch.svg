@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100">
+<!-- Cat Paw click effect: three claw scratches. -->
+<path d="M-18.00 -30 Q-14.00 0 -22.00 30" fill="none" stroke="#5A3A22" stroke-width="7" stroke-linecap="round"/><path d="M-18.00 -30 Q-14.00 0 -22.00 30" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M-5.00 -30 Q-1.00 0 -9.00 30" fill="none" stroke="#5A3A22" stroke-width="7" stroke-linecap="round"/><path d="M-5.00 -30 Q-1.00 0 -9.00 30" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M8.00 -30 Q12.00 0 4.00 30" fill="none" stroke="#5A3A22" stroke-width="7" stroke-linecap="round"/><path d="M8.00 -30 Q12.00 0 4.00 30" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+</svg>
