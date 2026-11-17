@@ -9,7 +9,7 @@ cask "manita" do
   desc "Cartoon hand pointer with click effects and presentation mode"
   homepage "https://github.com/gzimbron/manita"
 
-  depends_on macos: ">= :tahoe"
+  depends_on macos: :tahoe
 
   app "Manita.app"
 
