@@ -23,6 +23,9 @@
   },
   "click": {
     "bursts": ["classic"],
+    "svg": ["burst.svg"],
+    "size": 1.6,
+    "animation": { "from": 0.4, "to": 1.15, "duration": 0.4, "spin": true, "fade": true },
     "color": "#B8322A",
     "weight": 1
   }

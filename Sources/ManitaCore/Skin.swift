@@ -123,7 +123,11 @@ public struct Skin: Codable, Equatable, Identifiable, Sendable {
     public var assetData: [String: Data] = [:]
 
     /// SVG designs: every extra file the manifest names (sleeve, then click artwork).
-    public var assetNames: [String] { wand.svg?.files ?? [] }
+    public var assetNames: [String] {
+        var names: [String] = []
+        for name in (wand.svg?.files ?? []) + (click.svg ?? []) where !names.contains(name) { names.append(name) }
+        return names
+    }
 
     private enum CodingKeys: String, CodingKey {
         case id, name, author, palette, frames, hotspot, svg, armAnchor, armWidth, arm, wand, click

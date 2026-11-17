@@ -68,6 +68,73 @@ struct DesignAssetsTests {
         #expect(skin.assetData.isEmpty)
     }
 
+    // MARK: - Click
+
+    @Test func clickArtLoadsWithItsAnimation() throws {
+        let skin = try load(manifest(click: #"{"svg":["pow.svg","bam.svg"],"size":2,"tint":true,"animation":{"from":0.2,"to":1.5,"duration":0.6,"spin":false,"fade":false}}"#),
+                            files: ["pow.svg": Self.tile, "bam.svg": Self.tile])
+        #expect(skin.click.svg == ["pow.svg", "bam.svg"])
+        #expect(skin.click.size == 2 && skin.click.tint)
+        #expect(skin.click.animation == BurstAnimation(from: 0.2, to: 1.5, duration: 0.6, spin: false, fade: false))
+        #expect(skin.assetData["pow.svg"] != nil && skin.assetData["bam.svg"] != nil)
+    }
+
+    @Test func clickArtCyclesOnePerEffect() throws {
+        let skin = try load(manifest(click: #"{"svg":["pow.svg","bam.svg"]}"#), files: ["pow.svg": Self.tile, "bam.svg": Self.tile])
+        #expect([1, 2, 3].map { skin.click.art(forEffect: $0) } == ["pow.svg", "bam.svg", "pow.svg"])
+    }
+
+    @Test func clickArtDefaultsMatchTheClassicBurst() throws {
+        let skin = try load(manifest(click: #"{"svg":["pow.svg"]}"#), files: ["pow.svg": Self.tile])
+        #expect(skin.click.size == 1.6 && !skin.click.tint)
+        #expect(skin.click.animation == BurstAnimation(from: 0.4, to: 1.15, duration: 0.4, spin: true, fade: true))
+    }
+
+    @Test func clickWithMissingFileIsRejected() {
+        #expect(throws: SkinError.missingSVGFile("pow.svg")) {
+            try load(manifest(click: #"{"svg":["pow.svg"]}"#), files: [:])
+        }
+    }
+
+    @Test func clickOutsideTheFolderIsRejected() {
+        #expect(throws: SkinError.invalidSVGPath("/tmp/pow.svg")) {
+            try load(manifest(click: #"{"svg":["/tmp/pow.svg"]}"#), files: [:])
+        }
+    }
+
+    @Test func clickSizeOutOfRangeIsRejected() {
+        #expect(throws: SkinError.invalidClick("size must be from 0.25 to 6.0")) {
+            try load(manifest(click: #"{"svg":["pow.svg"],"size":9}"#), files: ["pow.svg": Self.tile])
+        }
+    }
+
+    @Test func clickDurationOutOfRangeIsRejected() {
+        #expect(throws: SkinError.invalidClick("animation.duration must be from 0.05 to 2.0")) {
+            try load(manifest(click: #"{"svg":["pow.svg"],"animation":{"duration":5}}"#), files: ["pow.svg": Self.tile])
+        }
+    }
+
+    @Test func clickScaleOutOfRangeIsRejected() {
+        #expect(throws: SkinError.invalidClick("animation.from and animation.to must be from 0.0 to 4.0")) {
+            try load(manifest(click: #"{"svg":["pow.svg"],"animation":{"to":-1}}"#), files: ["pow.svg": Self.tile])
+        }
+    }
+
+    @Test func designWithoutClickArtKeepsThePresets() throws {
+        let skin = try load(manifest(click: #"{"svg":[],"bursts":["ring"],"weight":2}"#), files: [:])
+        #expect(skin.click.svg == nil)
+        #expect(skin.click.bursts == [.ring] && skin.click.weight == 2)
+        #expect(skin.click.art(forEffect: 1) == nil)
+    }
+
+    @Test func bundledGloveShipsItsClickArt() throws {
+        let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        var registry = SkinRegistry()
+        let skin = try registry.register(manifestAt: repo.appending(path: "Resources/Skins/cartoon"))
+        let art = try #require(skin.click.svg?.first)
+        #expect(skin.assetData[art] != nil)
+    }
+
     @Test func bundledGloveShipsItsSleeve() throws {
         let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
         var registry = SkinRegistry()

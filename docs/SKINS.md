@@ -21,10 +21,11 @@ Skins/cartoon-blue/
 ├── idle.svg         the hand (pointer)
 ├── sleeve.svg       the sleeve tile (optional, see Wand)
 ├── cuff.svg         the sleeve's cuff piece (optional, see Wand)
+├── burst.svg        the click effect (optional, see Click effects)
 └── pressed.svg      (optional)
 ```
 
-A design has three parts you can draw: the **hand** (`svg.idle`), the **sleeve** (`wand.svg`) and the **click effect** (`click`). The bundled Glove draws its hand and sleeve as SVG.
+A design has three parts you can draw: the **hand** (`svg.idle`), the **sleeve** (`wand.svg`) and the **click effect** (`click`). The bundled Glove draws all three as SVG (`idle.svg`, `sleeve.svg`, `burst.svg`).
 
 > The app never shows the pressed artwork: the hand keeps its idle frame and a click is shown by the hop, burst and jab. `pressed.svg` is optional and currently not displayed (it is kept for compatibility, and `--render-preview` still draws it).
 
@@ -59,7 +60,7 @@ The **Color** setting overrides every color of the wand and the effects, except 
 
 Rules (checked by `Skin.validate()`; the root `<svg>` is read for its `viewBox`, or `width`/`height` when there is none):
 
-- File names cannot contain a path (`/`, `..`); a missing file, a file that is not an SVG, or a `pressed` with a different `viewBox` rejects the design. The same goes for the sleeve files named by `wand.svg`.
+- File names cannot contain a path (`/`, `..`); a missing file, a file that is not an SVG, or a `pressed` with a different `viewBox` rejects the design. The same goes for the files named by `wand.svg` and `click.svg`.
 - The longer side of the `viewBox` is drawn at `Size × 13` points (Size 1–8; the default Size 5 ≈ 65 pt), aspect ratio preserved, at Retina resolution.
 - The wand (the menu calls it the sleeve) is drawn by the app (a bar from `armAnchor`, opaque then fading out, unless `wand` says otherwise), leaning 20° down-right: tilt the glove about 20° to the left so the cuff lines up with it. Its length, opacity and how soon it fades come from the **Pointer Mood**, not from the design.
 - Preview the whole pointer with a mood and appearance: `.build/debug/Manita --render-pointer out.png path/to/design-folder 5 3 dark` (a bundled id such as `cartoon` works too).
@@ -107,6 +108,31 @@ The Glove's `sleeve.svg` is a plain 30 × 30 tile with `tint: true`, which looks
 | `bursts` | `classic` | Burst kinds, cycled one per effect, in order: `classic`, `rays`, `star`, `ring`. An empty list means the default. `classic` is the website's burst: 12 straight rays around a filled 10-point star, about 1.6× the hand's size at the default mood, behind the hand; its rotation, size and star position are randomized on every click. Its rays and star fill use `color` (always, whatever the **Color** setting says, so the design keeps its look); the star outline uses the wand's color, which the **Color** setting does change. |
 | `color` | the wand's color | `#RRGGBB` or `#RRGGBBAA`. |
 | `weight` | `1` | Line width multiplier, from 0.25 to 4. |
+| `svg` | none | The design's own click art: SVG files cycled one per effect. Replaces `bursts`. See below. |
+| `size` | `1.6` | With `svg`: size of the art in hand sizes at the default mood (from 0.25 to 6). |
+| `tint` | `false` | With `svg`: draw the art in `color` (its shapes are used as a mask), so the **Color** setting applies to it. Without it the art keeps its own colors. |
+| `animation` | see below | With `svg`: how the art plays. |
+
+#### Drawing your own click effect
+
+```json
+"click": {
+  "svg": ["burst.svg", "pow.svg"],
+  "size": 1.6,
+  "animation": { "from": 0.4, "to": 1.15, "duration": 0.4, "spin": true, "fade": true }
+}
+```
+
+The art is drawn centered on the click point, behind the hand, in a square `size` hands wide (the longer side of its `viewBox` fills it). The app animates it; SVG animation (SMIL, CSS) is not played.
+
+| `animation` field | Default | Meaning |
+| --- | --- | --- |
+| `from`, `to` | `0.4`, `1.15` | Scale at the start and at the end (1 = `size`), from 0 to 4. |
+| `duration` | `0.4` | Seconds, from 0.05 to 2. |
+| `spin` | `true` | Turn the art to a random angle on every click. |
+| `fade` | `true` | Fade out while it plays. |
+
+The **Pointer Mood** and the click streak scale it like the `classic` burst. The Glove's `burst.svg` is the classic burst (12 rays around a 10-point star) drawn as SVG, with the defaults above.
 
 Effects play from the click number chosen in the menu's **Effects From Click** (default 3; a rapid streak is clicks less than 0.45 s apart); they take about 0.3 s (0.4 s for `classic`, which has no trailing ring) and, for the other kinds, the faint ring that follows lasts at most 0.35 s after the burst. A design with an unknown `style` or burst kind, a bad color or an out-of-range `width`/`weight` is rejected and logged. These fields apply to SVG designs only; `svg.idle` is the cursor artwork.
 

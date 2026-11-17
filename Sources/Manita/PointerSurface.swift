@@ -187,6 +187,10 @@ final class PointerSurface {
     /// The classic burst's filled, outlined star; drawn above the rays, empty for other kinds.
     let starLayer = CAShapeLayer()
     let lingerLayer = CAShapeLayer()
+    /// The design's own click art (`click.svg`): this layer plays the animation, `artBurstImage` holds the
+    /// picture turned to this click's angle.
+    let artBurstLayer = CALayer()
+    let artBurstImage = CALayer()
     private let panel: NSPanel?
     private let canvas: CALayer
     private(set) var spec: PointerSpec?
@@ -227,6 +231,9 @@ final class PointerSurface {
             layer.opacity = 0
             canvas.addSublayer(layer)
         }
+        artBurstLayer.opacity = 0
+        artBurstLayer.addSublayer(artBurstImage)
+        canvas.addSublayer(artBurstLayer)
         // The hand is drawn above its own burst.
         canvas.addSublayer(pointer.root)
     }
@@ -272,7 +279,7 @@ final class PointerSurface {
         let rect = CGRect(x: point.x - side / 2, y: point.y - side / 2, width: side, height: side)
         effectsRect = rect
         let local = CGPoint(x: point.x - frame.minX, y: point.y - frame.minY)
-        for layer in [burstLayer, starLayer, lingerLayer] { layer.position = local }
+        for layer in [burstLayer, starLayer, lingerLayer, artBurstLayer] { layer.position = local }
         place(hotspot: hotspot)
     }
 
