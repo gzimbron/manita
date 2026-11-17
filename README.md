@@ -48,6 +48,15 @@ swift test                    # run unit tests (ManitaCore)
 scripts/build-app.sh debug    # debug .app bundle
 ```
 
+Or use the `Makefile` shortcuts (`make` lists them all):
+
+```sh
+make open                     # quit Manita, rebuild the debug app and open it
+make build | make test | make release | make clean
+make pointer DESIGN=cartoon MOOD=3 APPEARANCE=dark   # render the pointer and open the PNG
+make preview DESIGN=path/to/design-folder            # render a design's artwork
+```
+
 The icon appears in the menu bar (there is no Dock icon). Quit from the menu.
 
 ### Permissions
