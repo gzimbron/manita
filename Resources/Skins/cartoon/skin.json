@@ -3,8 +3,7 @@
   "name": "Glove",
   "author": "Manita",
   "svg": {
-    "idle": "idle.svg",
-    "pressed": "pressed.svg"
+    "idle": "idle.svg"
   },
   "hotspot": {
     "x": 35,

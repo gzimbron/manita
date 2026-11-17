@@ -403,6 +403,6 @@ struct SVGSkinTests {
         var registry = SkinRegistry()
         let skin = try registry.register(manifestAt: repo.appending(path: "Resources/Skins/cartoon"))
         #expect(skin.id == "cartoon")
-        #expect(skin.svgData[.idle] != nil && skin.svgData[.pressed] != nil)
+        #expect(skin.svgData[.idle] != nil && skin.svgData[.pressed] == nil)
     }
 }
