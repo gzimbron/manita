@@ -151,8 +151,21 @@ section { max-width: 1200px; margin: 0 auto; padding: 3.5rem 1.5rem; }
   overflow: visible; animation: burst 0.4s ease-out both;
 }
 .burst-big { width: 190px; height: 190px; margin: -95px 0 0 -95px; }
-.burst path { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.burst path { fill: none; stroke: var(--accent); stroke-width: calc(4 * var(--burst-weight, 1)); stroke-linecap: round; }
 .burst .burst-star { fill: var(--accent); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.click-art { position: absolute; pointer-events: none; }
+
+/* Demo controls: design, colour, size and mood, like the app's menu */
+.demo-controls {
+  display: flex; flex-wrap: wrap; gap: 0.8rem 1.6rem; align-items: end; margin-top: 1.4rem;
+}
+.demo-controls label { display: grid; gap: 0.3rem; font-weight: 800; color: var(--ink); }
+.demo-controls select {
+  font: inherit; font-weight: 600; padding: 0.3rem 0.6rem; border: 3px solid var(--ink); border-radius: 6px;
+  background: var(--surface); color: var(--ink);
+}
+.demo-controls input[type="range"] { width: 11rem; accent-color: var(--accent); }
+.demo-controls output { font-weight: 600; opacity: 0.8; }
 @keyframes burst {
   0% { opacity: 1; scale: 0.4; }
   100% { opacity: 0; scale: 1.15; }

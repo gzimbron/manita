@@ -1,12 +1,15 @@
-// Live demo: the cartoon hand follows the pointer inside the stage.
+// Live demo: the chosen design follows the pointer inside the stage.
 // Mirrors the app: every click makes the hand + sleeve hop up-left along the
 // finger axis and spring back (the artwork never changes). From the 3rd rapid
 // click (< 450 ms apart) the hand jabs and shakes, leaves two trailing
-// copies and a burst plays behind it.
+// copies and the design's click effect plays behind it. Design, colour, size
+// and mood come from the controls above the stage (see skins.ts).
+
+import { SKINS, MOODS, DEFAULT_MOOD, handPixels, type Skin, type Variant, type Mood } from "./skins";
 
 const STREAK_MS = 450;
-const HOT_X = 0.35; // hotspot from skin.json, as a fraction of the hand box
-const HOT_Y = 0.06;
+const SVG_NS = "http://www.w3.org/2000/svg";
+const ARM_ANGLE = 20; // degrees from vertical, toward the bottom-right (OverlayController.armAngle)
 // Finger axis: the idle art is tilted -20deg, so the finger points up-left.
 const AXIS = { x: -Math.sin((20 * Math.PI) / 180), y: -Math.cos((20 * Math.PI) / 180) };
 const SIDE = { x: -AXIS.y, y: AXIS.x }; // perpendicular, for the shake
@@ -18,8 +21,59 @@ const HOP_EASING = ["ease-out", "ease-in-out", "ease-in-out", "ease-in"]; // per
 const TRAIL_ALPHA = [0.6, 0.2]; // constant opacity of the two trailing copies
 const TRAIL_MS = 45; // delay between the hand and each trailing copy
 const JAB = [0, 1.4, -0.25, 1.3, -0.25, 0.9, -0.1, 0]; // multiples of the hop distance
-const HOP_DIST = 0.12; // of hand size
+const HOP_DIST = 0.12; // of hand size, at the default mood (scaled by the mood's jabDistance)
 const SHAKE = 0.07; // sideways, of hand size
+
+let sleeveId = 0;
+
+/** Draws the design's idle art and sleeve into the hand SVG, like PointerSurface + HandArtwork. */
+function drawHand(svg: SVGSVGElement, skin: Skin, variant: Variant, mood: Mood) {
+  const el = (name: string, attrs: Record<string, string | number>, ...kids: Element[]) => {
+    const node = document.createElementNS(SVG_NS, name);
+    for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
+    node.append(...kids);
+    return node;
+  };
+  const image = (a: { uri: string }, x: number, y: number, w: number, h: number) =>
+    el("image", { href: a.uri, x, y, width: w, height: h, preserveAspectRatio: "none" });
+
+  const rad = (ARM_ANGLE * Math.PI) / 180;
+  const width = skin.armWidth * mood.armWidthScale;
+  const length = 100 * mood.armLengthInHands;
+  const tuck = skin.armWidth * 0.25;
+  const sx = skin.armAnchor.x - Math.sin(rad) * tuck;
+  const sy = skin.armAnchor.y - Math.cos(rad) * tuck;
+  const tileH = width * (variant.tile.height / variant.tile.width);
+  const cuffH = variant.cuff ? width * (variant.cuff.height / variant.cuff.width) : 0;
+  const id = `sleeve-${++sleeveId}`;
+
+  // The strip hangs down from the hand end (y = 0): the cuff once, then the tile repeated.
+  const defs = el("defs", {},
+    el("pattern", { id: `${id}-tile`, patternUnits: "userSpaceOnUse", x: -width / 2, y: cuffH, width, height: tileH },
+      image(variant.tile, 0, 0, width, tileH)));
+  const strip = el("g", { transform: `translate(${sx} ${sy}) rotate(${-ARM_ANGLE})`, opacity: mood.armOpacity });
+  if (variant.tint) {
+    defs.append(el("filter", { id: `${id}-tint`, x: 0, y: 0, width: 1, height: 1 },
+      el("feFlood", { "flood-color": variant.tint }),
+      el("feComposite", { in2: "SourceGraphic", operator: "in" })));
+    strip.setAttribute("filter", `url(#${id}-tint)`);
+  }
+  if (skin.fade) {
+    defs.append(
+      el("linearGradient", { id: `${id}-fade`, gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: 0, y2: length },
+        el("stop", { offset: 0, "stop-color": "#fff" }),
+        el("stop", { offset: mood.armOpaqueFraction, "stop-color": "#fff" }),
+        el("stop", { offset: 1, "stop-color": "#000" })),
+      el("mask", { id: `${id}-mask`, maskUnits: "userSpaceOnUse", x: -width, y: -1, width: width * 2, height: length + 2 },
+        el("rect", { x: -width, y: -1, width: width * 2, height: length + 2, fill: `url(#${id}-fade)` })));
+  }
+  const pieces = el("g", skin.fade ? { mask: `url(#${id}-mask)` } : {});
+  if (variant.cuff) pieces.append(image(variant.cuff, -width / 2, 0, width, cuffH));
+  pieces.append(el("rect", { x: -width / 2, y: cuffH, width, height: length - cuffH, fill: `url(#${id}-tile)` }));
+  strip.append(pieces);
+
+  svg.replaceChildren(defs, strip, image(variant.idle, 0, 0, 100, 100));
+}
 
 const stage = document.querySelector<HTMLElement>("[data-stage]");
 const hand = stage?.querySelector<HTMLElement>(".hand");
@@ -28,6 +82,43 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)");
 
 if (stage && hand) {
   const body = hand.querySelector<HTMLElement>(".hand-body")!;
+  const artSvg = hand.querySelector<SVGSVGElement>("[data-hand-art]")!;
+  const controls = document.querySelector<HTMLElement>("[data-demo-controls]");
+  const pick = <T extends HTMLElement>(name: string) => controls?.querySelector<T>(`[data-control="${name}"]`) ?? null;
+  const skinSelect = pick<HTMLSelectElement>("skin");
+  const colorSelect = pick<HTMLSelectElement>("color");
+  const sizeInput = pick<HTMLInputElement>("size");
+  const moodInput = pick<HTMLInputElement>("mood");
+  const sizeOut = pick<HTMLOutputElement>("size-out");
+  const moodOut = pick<HTMLOutputElement>("mood-out");
+  const moodNames = (controls?.dataset.moods ?? "").split("|");
+
+  let skin = SKINS[0];
+  let variant = skin.variants[0];
+  let mood = MOODS[DEFAULT_MOOD];
+  let effectSlot = 0;
+
+  const fillColors = () => {
+    if (!colorSelect) return;
+    colorSelect.replaceChildren(...skin.variants.map((v, i) => new Option(colorSelect.dataset[`c${v.name.toLowerCase()}`] ?? v.name, String(i))));
+  };
+  const apply = () => {
+    skin = SKINS.find((s) => s.id === skinSelect?.value) ?? SKINS[0];
+    variant = skin.variants[Number(colorSelect?.value)] ?? skin.variants[0];
+    mood = MOODS[Number(moodInput?.value ?? DEFAULT_MOOD)] ?? MOODS[DEFAULT_MOOD];
+    const px = handPixels(Number(sizeInput?.value ?? 1));
+    hand.style.width = hand.style.height = `${px}px`;
+    if (sizeOut) sizeOut.textContent = `${sizeInput?.value ?? 1}×`;
+    if (moodOut) moodOut.textContent = moodNames[Number(moodInput?.value ?? DEFAULT_MOOD)] ?? "";
+    drawHand(artSvg, skin, variant, mood);
+    place();
+  };
+  skinSelect?.addEventListener("change", () => {
+    skin = SKINS.find((s) => s.id === skinSelect.value) ?? SKINS[0];
+    fillColors();
+    apply();
+  });
+  [colorSelect, sizeInput, moodInput].forEach((c) => c?.addEventListener("input", apply));
   let x = 0;
   let y = 0;
   let queued = false;
@@ -40,7 +131,7 @@ if (stage && hand) {
   const place = () => {
     queued = false;
     const s = size();
-    hand.style.transform = `translate3d(${x - s * HOT_X}px, ${y - s * HOT_Y}px, 0)`;
+    hand.style.transform = `translate3d(${x - (s * skin.hotspot.x) / 100}px, ${y - (s * skin.hotspot.y) / 100}px, 0)`;
   };
   const schedule = () => {
     if (!queued) {
@@ -66,15 +157,50 @@ if (stage && hand) {
       hand.classList.add("is-visible");
     }
   };
+  fillColors();
+  apply();
   enable();
   reduced.addEventListener("change", enable);
 
+  // Effects grow with the mood, like OverlayController (burstRadius relative to the default mood).
+  const moodRatio = () => mood.burstRadius / MOODS[DEFAULT_MOOD].burstRadius;
+
+  // The design's own click art (cat, magic): one piece per burst, in turn, scattered and spun.
+  const playArt = () => {
+    const c = skin.click;
+    const a = c.art[effectSlot++ % c.art.length];
+    const s = size() * c.size * moodRatio();
+    const rnd = (lo: number, hi: number) => lo + Math.random() * (hi - lo);
+    const spread = c.scatter * size();
+    const img = document.createElement("img");
+    img.src = a.uri;
+    img.alt = "";
+    img.className = "click-art";
+    img.style.width = img.style.height = `${s}px`;
+    img.style.left = `${x + rnd(-spread, spread) - s / 2}px`;
+    img.style.top = `${y + rnd(-spread, spread) - s / 2}px`;
+    stage.insertBefore(img, hand);
+    const turn = rnd(-c.rotation, c.rotation);
+    img.animate(
+      [
+        { scale: c.from, rotate: "0deg", opacity: 1 },
+        { scale: c.to, rotate: `${turn}deg`, opacity: 0 },
+      ],
+      { duration: c.duration * 1000, easing: "ease-out", fill: "forwards" },
+    ).finished.finally(() => img.remove());
+  };
+
   const burst = () => {
+    if (!skin.click.classic) return playArt();
     const big = true;
-    const n = 12;
+    const n = mood.burstRays;
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "-50 -50 100 100");
     svg.setAttribute("class", "burst" + (big ? " burst-big" : ""));
+    const px = size() * skin.click.size * moodRatio();
+    svg.style.width = svg.style.height = `${px}px`;
+    svg.style.margin = `${-px / 2}px 0 0 ${-px / 2}px`;
+    svg.style.setProperty("--burst-weight", String(mood.burstWeight));
     svg.style.left = `${x}px`;
     svg.style.top = `${y}px`;
     let d = "";
@@ -108,7 +234,7 @@ if (stage && hand) {
   };
 
   const frames = (steps: number[], shake: boolean): Keyframe[] => {
-    const d = size() * HOP_DIST;
+    const d = size() * HOP_DIST * (mood.jabDistance / MOODS[DEFAULT_MOOD].jabDistance);
     return steps.map((v, i) => {
       const side = shake ? (i % 2 ? 1 : -1) * (i === 0 || i === steps.length - 1 ? 0 : SHAKE * size()) : 0;
       return {
@@ -129,6 +255,8 @@ if (stage && hand) {
       const g = document.createElement("div");
       g.className = "hand-ghost";
       g.style.transform = hand.style.transform;
+      g.style.width = hand.style.width;
+      g.style.height = hand.style.height;
       g.style.opacity = String(alpha);
       const copy = body.cloneNode(true) as HTMLElement;
       g.append(copy);
