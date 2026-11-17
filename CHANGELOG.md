@@ -2,6 +2,13 @@
 
 All notable changes are documented here. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [SemVer](https://semver.org/).
 
+## [1.1.1](https://github.com/gzimbron/manita/compare/v1.1.0...v1.1.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* load built-in skins from Contents/Resources in the packaged app ([#4](https://github.com/gzimbron/manita/issues/4)) ([8ff09f8](https://github.com/gzimbron/manita/commit/8ff09f85931c96d07f56d960e1450f92ea8cd7c3))
+
 ## [1.1.0](https://github.com/gzimbron/manita/compare/v1.0.0...v1.1.0) (2026-11-17)
 
 
