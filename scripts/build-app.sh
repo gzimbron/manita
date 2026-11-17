@@ -14,7 +14,7 @@ BIN="$(swift build -c "$CONFIG" --show-bin-path)/Manita"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/Manita"
-# SwiftPM resource bundles (bundled SVG designs); Bundle.module looks in Contents/Resources.
+# SwiftPM resource bundles (bundled SVG designs). BuiltInSkins looks them up in Contents/Resources.
 for bundle in "$(dirname "$BIN")"/*.bundle; do
     [ -e "$bundle" ] && cp -R "$bundle" "$APP/Contents/Resources/"
 done
