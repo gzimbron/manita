@@ -126,7 +126,7 @@ section { max-width: 1200px; margin: 0 auto; padding: 3.5rem 1.5rem; }
   position: relative; height: clamp(300px, 55vh, 440px); margin-top: 2rem; overflow: hidden;
   background: var(--surface); border: 3px solid var(--ink); border-radius: 6px;
   background-image: repeating-conic-gradient(from 0deg at 50% 45%, rgb(28 23 18 / 0.06) 0 11.25deg, transparent 11.25deg 22.5deg);
-  touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  touch-action: none; user-select: none; -webkit-user-select: none;
 }
 .stage::before { content: ""; position: absolute; inset: 6px; border: 1px solid var(--ink); opacity: 0.4; pointer-events: none; }
 @media (hover: hover) and (pointer: fine) {
