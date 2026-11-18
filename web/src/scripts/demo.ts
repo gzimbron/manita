@@ -279,11 +279,8 @@ if (stage && hand) {
   });
   stage.addEventListener("pointerleave", (e) => {
     if (reduced.matches) return;
-    // Touch taps keep the hand a moment so the effect is seen.
-    hideTimer = window.setTimeout(
-      () => hand.classList.remove("is-visible"),
-      e.pointerType === "mouse" ? 0 : 700,
-    );
+    // Touch keeps the hand where the finger lifted, remembering its position.
+    if (e.pointerType === "mouse") hand.classList.remove("is-visible");
   });
 
   stage.addEventListener("pointerdown", (e) => {
@@ -308,9 +305,6 @@ if (stage && hand) {
     if (hint) {
       hint.textContent = streak >= 3 ? `×${streak} — ${stage.dataset.jab ?? "jab!"}` : `×${streak}`;
       hint.classList.toggle("hot", streak >= 3);
-    }
-    if (e.pointerType !== "mouse") {
-      hideTimer = window.setTimeout(() => hand.classList.remove("is-visible"), 900);
     }
   });
 }
